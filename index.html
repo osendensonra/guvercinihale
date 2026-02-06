@@ -3,183 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GÜVERCİN PAZARI | Görsel Yükleme</title>
+    <title>Güvercin Mezatı | osendensonra</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .hidden { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .bid-animate { animation: scaleUp 0.3s ease-out; }
+        @keyframes scaleUp {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); color: #2563eb; }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
-<body class="text-slate-900">
+<body class="bg-gray-100">
 
-    <nav class="sticky top-0 z-50 glass border-b border-slate-200">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex justify-between items-center">
-            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.reload()">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">G</div>
-                <span class="font-black text-xl tracking-tighter uppercase italic">Güvercin<span class="text-blue-600">Pazarı</span></span>
-            </div>
-            <div id="nav-actions" class="flex items-center space-x-3">
-                <button onclick="sayfaAc('login')" class="text-xs font-bold bg-blue-600 text-white px-4 py-2 rounded-full">GİRİŞ YAP</button>
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold text-blue-600 flex items-center gap-2">
+                <i class="fas fa-dove"></i> GÜVERCİN MEZATI
+            </h1>
+            <div id="timer-badge" class="bg-red-100 text-red-600 px-4 py-2 rounded-full font-mono font-bold flex items-center gap-2">
+                <i class="fas fa-clock"></i> <span id="timer">01:00:00</span>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main id="home" class="max-w-lg mx-auto p-4 pt-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Canlı Mezat</h2>
-            <div id="add-action" class="hidden">
-                <button onclick="sayfaAc('add-bid')" class="bg-emerald-600 text-white text-[10px] font-black px-4 py-2 rounded-full shadow-lg border-2 border-white">+ İHALE BAŞLAT</button>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden mb-10">
-            <div class="relative">
-                <img id="c-img" src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=600" class="w-full h-80 object-cover bg-gray-200">
-                <div class="absolute top-4 left-4">
-                    <span id="c-seller" class="bg-black/50 text-white backdrop-blur-md text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">Satıcı: Sistem</span>
-                </div>
-            </div>
-            
-            <div class="p-8">
-                <h3 id="c-title" class="text-3xl font-black uppercase text-slate-800 leading-tight mb-6">Mavi Şebap</h3>
-                
-                <div class="bg-slate-50 p-6 rounded-3xl flex justify-between items-center border border-slate-100 shadow-inner">
-                    <div>
-                        <span class="text-slate-400 text-[10px] font-bold uppercase block mb-1">En Yüksek Teklif</span>
-                        <div id="c-price" class="text-3xl font-black text-blue-700 tracking-tighter">1.500 TL</div>
+    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-md">
+                <div class="relative group">
+                    <img src="https://images.unsplash.com/photo-1509112756314-34a0badb29d4?auto=format&fit=crop&q=80&w=1000" 
+                         alt="Güvercin" class="w-full h-[400px] object-cover">
+                    <div class="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded-lg text-sm backdrop-blur-sm">
+                        Künye: TR-2026-OSN-5521
                     </div>
-                    <button onclick="makeBid()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:bg-blue-700 active:scale-95 transition-all uppercase tracking-tighter">Teklif Ver</button>
                 </div>
+                
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 class="text-3xl font-extrabold text-gray-800">Mavi Çakmaklı Oyunlu</h2>
+                            <p class="text-gray-500 mt-1">Sahiplendiren: <span class="font-semibold text-blue-500 underline cursor-pointer">osendensonra</span></p>
+                        </div>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold italic">Süper Damızlık</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-y border-gray-100">
+                        <div class="text-center">
+                            <span class="text-gray-400 text-xs block uppercase">Irk</span>
+                            <span class="font-bold text-gray-700">Şanlıurfa Taklacı</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-gray-400 text-xs block uppercase">Cinsiyet</span>
+                            <span class="font-bold text-gray-700">Erkek</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-gray-400 text-xs block uppercase">Yaş</span>
+                            <span class="font-bold text-gray-700">2024 Doğum</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-gray-400 text-xs block uppercase">Şehir</span>
+                            <span class="font-bold text-gray-700">Ankara</span>
+                        </div>
+                    </div>
+
+                    <p class="mt-6 text-gray-600 leading-relaxed">
+                        Kuşun tüm aşıları yapılmıştır. Performansı videoda görüldüğü gibidir. Damızlık değeri yüksek, altından her renk yavru atabilen çok vasıflı bir kuştur. Şehir dışına güvenli gönderim sağlanır.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-xl border-t-4 border-blue-600">
+                <div class="text-center mb-6">
+                    <span class="text-gray-400 uppercase text-xs font-bold tracking-widest">GÜNCEL FİYAT</span>
+                    <div id="price-display" class="text-5xl font-black text-blue-700 mt-2 transition-all">1.250 ₺</div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="addBid(50)" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 py-3 rounded-xl font-bold transition-all active:scale-95">+50 ₺</button>
+                    <button onclick="addBid(100)" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 py-3 rounded-xl font-bold transition-all active:scale-95">+100 ₺</button>
+                    <button onclick="addBid(250)" class="bg-blue-600 text-white hover:bg-blue-700 py-4 rounded-xl font-bold col-span-2 shadow-lg shadow-blue-200 flex justify-center items-center gap-2 transition-all active:scale-95 uppercase tracking-wide">
+                        <i class="fas fa-gavel"></i> Teklif Ver (+250 ₺)
+                    </button>
+                </div>
+
+                <div class="border-t pt-4">
+                    <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                        <i class="fas fa-list-ul text-blue-500"></i> Teklif Geçmişi
+                    </h3>
+                    <div id="bid-history" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                        </div>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 flex gap-3">
+                <i class="fas fa-shield-alt text-yellow-600 mt-1"></i>
+                <p class="text-xs text-yellow-800 leading-tight">
+                    <strong>Mezat Kuralları:</strong> Son 1 dakika içerisinde gelen her teklif, ihaleyi otomatik olarak 2 dakika uzatır. "Cayma" durumunda kullanıcı engellenir.
+                </p>
             </div>
         </div>
     </main>
 
-    <section id="login" class="hidden max-w-sm mx-auto p-6 mt-10">
-        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border border-slate-100 text-center">
-            <h2 class="text-2xl font-black mb-6 uppercase tracking-tighter">Giriş Yap</h2>
-            <input type="text" id="u-name" placeholder="Kullanıcı Adı" class="w-full border p-4 rounded-2xl mb-3 outline-none">
-            <input type="password" id="u-pass" placeholder="Şifre" class="w-full border p-4 rounded-2xl mb-4 outline-none">
-            <button onclick="handleLogin()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">SİSTEME GİR</button>
-            <p class="text-[10px] text-slate-400 mt-4 italic text-center">Kullanıcı adı ve şifrenizi giriniz.</p>
-        </div>
-    </section>
-
-    <section id="add-bid" class="hidden max-w-sm mx-auto p-6 mt-10">
-        <div class="bg-white p-8 rounded-[3rem] shadow-2xl border-4 border-emerald-500">
-            <h2 class="text-2xl font-black text-emerald-600 mb-6 uppercase italic tracking-tighter text-center">İhale Oluştur</h2>
-            <div class="space-y-4">
-                <div class="relative w-full h-40 bg-slate-100 rounded-3xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
-                    <input type="file" id="new-img-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage(this)">
-                    <div id="preview-placeholder" class="text-center">
-                        <span class="text-4xl">📸</span>
-                        <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Görsel Seç</p>
-                    </div>
-                    <img id="img-preview" class="hidden w-full h-full object-cover">
-                </div>
-                
-                <input type="text" id="new-t" placeholder="Güvercin Cinsi" class="w-full border p-4 rounded-2xl outline-none font-bold">
-                <input type="number" id="new-p" placeholder="Başlangıç Fiyatı (TL)" class="w-full border p-4 rounded-2xl outline-none font-bold">
-                <button onclick="submitBid()" class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black shadow-xl uppercase tracking-tighter">İhaleyi Başlat</button>
-                <button onclick="sayfaAc('home')" class="w-full text-slate-400 text-xs font-bold uppercase">Geri Dön</button>
-            </div>
-        </div>
-    </section>
-
     <script>
-        let user = localStorage.getItem('activeUser') || null;
-        let selectedImageData = "";
+        let currentPrice = 1250;
+        let timeLeft = 3600; // 1 saat
 
-        function sayfaAc(id) {
-            ['home', 'login', 'add-bid'].forEach(p => document.getElementById(p).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            window.scrollTo(0,0);
-        }
+        const historyData = [
+            { user: "Güvercinci_Ahmet", price: 1100, time: "5 dk önce" },
+            { user: "Kuşçu_06", price: 1000, time: "12 dk önce" }
+        ];
 
-        function handleLogin() {
-            const n = document.getElementById('u-name').value;
-            const p = document.getElementById('u-pass').value;
-
-            if (n === 'admin' && p === 'admin64') {
-                user = 'admin';
-            } else if (n && p) {
-                user = n;
-            } else {
-                return alert('Eksik bilgi!');
-            }
-
-            localStorage.setItem('activeUser', user);
-            location.reload();
-        }
-
-        if (user) {
-            document.getElementById('nav-actions').innerHTML = `
-                <div class="flex flex-col items-end">
-                    <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${user}</span>
-                    <button onclick="logout()" class="text-red-500 font-bold text-[9px] uppercase tracking-tighter">ÇIKIŞ YAP</button>
+        // Başlangıç tekliflerini yükle
+        function loadHistory() {
+            const container = document.getElementById('bid-history');
+            container.innerHTML = historyData.map(bid => `
+                <div class="flex justify-between items-center text-sm bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <span class="font-semibold text-gray-700">${bid.user}</span>
+                    <span class="font-bold text-blue-600">${bid.price.toLocaleString('tr-TR')} ₺</span>
                 </div>
-            `;
-            document.getElementById('add-action').classList.remove('hidden');
+            `).join('');
         }
 
-        function logout() {
-            localStorage.removeItem('activeUser');
-            location.reload();
-        }
+        // Teklif Verme Fonksiyonu
+        function addBid(amount) {
+            currentPrice += amount;
+            
+            // Fiyatı Güncelle
+            const priceTag = document.getElementById('price-display');
+            priceTag.innerText = currentPrice.toLocaleString('tr-TR') + " ₺";
+            priceTag.classList.add('bid-animate');
+            setTimeout(() => priceTag.classList.remove('bid-animate'), 300);
 
-        // Görsel Seçildiğinde Önizleme Yap
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedImageData = e.target.result;
-                    document.getElementById('img-preview').src = selectedImageData;
-                    document.getElementById('img-preview').classList.remove('hidden');
-                    document.getElementById('preview-placeholder').classList.add('hidden');
-                };
-                reader.readAsDataURL(input.files[0]);
+            // Geçmişe Ekle
+            const container = document.getElementById('bid-history');
+            const newBid = document.createElement('div');
+            newBid.className = "flex justify-between items-center text-sm bg-blue-50 p-3 rounded-lg border border-blue-100 bid-animate";
+            newBid.innerHTML = `<span class="font-semibold text-blue-800">Siz (osendensonra)</span><span class="font-bold text-blue-700">${currentPrice.toLocaleString('tr-TR')} ₺</span>`;
+            container.prepend(newBid);
+
+            // Mezat Uzatma Mantığı (Son 1 dakika kontrolü)
+            if (timeLeft < 60) {
+                timeLeft += 120;
+                document.getElementById('timer-badge').classList.replace('bg-red-100', 'bg-orange-100');
+                document.getElementById('timer-badge').classList.replace('text-red-600', 'text-orange-600');
+                alert("Pey geldi! İhale süresi 2 dakika uzatıldı.");
             }
         }
 
-        function submitBid() {
-            const t = document.getElementById('new-t').value;
-            const p = document.getElementById('new-p').value;
-
-            if(!t || !p || !selectedImageData) return alert('Lütfen görsel seçin, başlık ve fiyat girin!');
-
-            localStorage.setItem('c_title', t);
-            localStorage.setItem('c_img', selectedImageData);
-            localStorage.setItem('c_price', p);
-            localStorage.setItem('c_seller', user);
+        // Sayaç Güncelleme
+        function updateTimer() {
+            const timerDisplay = document.getElementById('timer');
+            const h = Math.floor(timeLeft / 3600);
+            const m = Math.floor((timeLeft % 3600) / 60);
+            const s = timeLeft % 60;
             
-            alert('İhale Başarıyla Başlatıldı!');
-            location.reload();
+            timerDisplay.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            
+            if (timeLeft > 0) {
+                timeLeft--;
+            } else {
+                timerDisplay.innerText = "BİTTİ";
+                document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            }
         }
 
-        window.onload = function() {
-            const t = localStorage.getItem('c_title');
-            const i = localStorage.getItem('c_img');
-            const p = localStorage.getItem('c_price');
-            const s = localStorage.getItem('c_seller');
-
-            if(t) document.getElementById('c-title').innerText = t;
-            if(i) document.getElementById('c-img').src = i;
-            if(p) document.getElementById('c-price').innerText = new Intl.NumberFormat('tr-TR').format(p) + " TL";
-            if(s) document.getElementById('c-seller').innerText = "Satıcı: " + s;
-        };
-
-        function makeBid() {
-            if(!user) return alert('Lütfen önce giriş yapın!');
-            const b = prompt("Teklifiniz (TL):");
-            if(!b || isNaN(b)) return;
-
-            const old = localStorage.getItem('c_price') || 0;
-            if(Number(b) <= Number(old)) return alert('Daha yüksek bir teklif verin!');
-
-            localStorage.setItem('c_price', b);
-            location.reload();
-        }
+        setInterval(updateTimer, 1000);
+        loadHistory();
     </script>
 </body>
 </html>
