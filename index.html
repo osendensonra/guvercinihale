@@ -3,146 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GÜVERCİN MEZAT | Professional</title>
+    <title>GÜVERCİN MEZAT | Yönetim Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
-        .bid-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .bid-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
-        @keyframes pulse-green { 0% { color: #1e3a8a; } 50% { color: #10b981; transform: scale(1.1); } 100% { color: #1e3a8a; } }
-        .price-update { animation: pulse-green 0.6s ease-out; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .hidden { display: none; }
+        .admin-border { border: 2px solid #ef4444 !important; }
     </style>
 </head>
 <body class="text-slate-900">
 
     <nav class="sticky top-0 z-50 glass border-b border-slate-200">
         <div class="max-w-5xl mx-auto px-4 h-16 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <span class="text-white font-black text-xs">G</span>
-                </div>
-                <span class="font-black text-xl tracking-tighter text-slate-800 uppercase">Güvercin<span class="text-blue-600">Mezat</span></span>
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="sayfaAc('ana-sayfa')">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">G</div>
+                <span class="font-black text-xl tracking-tighter uppercase">Güvercin<span class="text-blue-600">Mezat</span></span>
             </div>
-            <button onclick="adminLogin()" class="text-[10px] font-bold tracking-widest text-slate-400 hover:text-blue-600 transition-colors uppercase">Yönetici Girişi</button>
+            <div id="nav-butonlar" class="flex space-x-2">
+                <button onclick="sayfaAc('giris-ekrani')" class="text-xs font-bold bg-slate-100 px-4 py-2 rounded-full hover:bg-slate-200 transition">GİRİŞ / ÜYE OL</button>
+            </div>
         </div>
     </nav>
 
-    <main class="max-w-lg mx-auto p-4 pt-8">
-        
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h2 class="text-3xl font-black text-slate-800 tracking-tight">Canlı Mezat</h2>
-                <p class="text-slate-500 text-sm">Şu an yayında olan aktif ihaleler</p>
-            </div>
-            <div class="flex items-center space-x-2 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
-                <span class="text-emerald-700 text-[10px] font-bold uppercase tracking-wider">Canlı</span>
+    <main id="ana-sayfa" class="max-w-lg mx-auto p-4 pt-8">
+        <div class="mb-6 flex justify-between items-end">
+            <h2 class="text-3xl font-black text-slate-800 tracking-tight">Aktif Mezat</h2>
+            <div id="admin-ekle-butonu" class="hidden">
+                <button onclick="sayfaAc('ihale-ekle')" class="bg-red-600 text-white text-[10px] font-bold px-4 py-2 rounded-full shadow-lg">+ İHALE EKLE</button>
             </div>
         </div>
 
-        <div class="bid-card bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-            <div class="relative group">
-                <img src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=600" class="w-full h-72 object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
-                <div class="absolute bottom-6 left-6 text-white">
-                    <span class="bg-blue-600 text-[10px] font-bold px-3 py-1 rounded-full mb-2 inline-block">VİTRİN İLANI</span>
-                    <h3 class="text-2xl font-bold uppercase tracking-wide">Mavi Şebap Kupalı</h3>
-                </div>
-            </div>
-
+        <div id="aktif-ihale-karti" class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+            <img id="ihale-resim" src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=600" class="w-full h-64 object-cover">
             <div class="p-8">
-                <div class="flex justify-between items-center mb-8 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                <h3 id="ihale-baslik" class="text-2xl font-black uppercase mb-4 text-slate-800">Mavi Şebap Kupalı</h3>
+                <div class="bg-slate-50 p-6 rounded-3xl flex justify-between items-center mb-6">
                     <div>
-                        <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest block mb-1">En Yüksek Teklif</span>
-                        <div id="fiyat" class="text-4xl font-black text-slate-800 tracking-tighter transition-all">1.500 TL</div>
+                        <span class="text-slate-400 text-[10px] font-bold uppercase block">En Yüksek Teklif</span>
+                        <div id="fiyat" class="text-3xl font-black text-blue-700">1.500 TL</div>
                     </div>
-                    <button onclick="teklifVer()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-slate-200 hover:bg-blue-700 active:scale-95 transition-all">
-                        Teklif Ver
-                    </button>
+                    <button onclick="teklifVer()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:bg-blue-700 active:scale-95 transition-all">TEKLİF VER</button>
                 </div>
-
-                <div class="space-y-4">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Teklif Geçmişi</h4>
-                    <div id="mesajlar" class="space-y-3 min-h-[100px]">
-                        </div>
-                </div>
+                <div id="mesajlar" class="space-y-3"></div>
             </div>
         </div>
-
-        <p class="text-center text-slate-400 text-[10px] mt-12 font-medium uppercase tracking-[0.2em]">
-            © 2026 GÜVERCİN MEZAT PLATFORMU
-        </p>
     </main>
 
+    <div id="giris-ekrani" class="hidden max-w-sm mx-auto p-6 mt-10">
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border border-slate-100">
+            <h2 class="text-2xl font-black text-center mb-6">Hesabınıza Girin</h2>
+            <input type="text" id="login-user" placeholder="Kullanıcı Adı" class="w-full border p-4 rounded-2xl mb-3 outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="password" id="login-pass" placeholder="Şifre" class="w-full border p-4 rounded-2xl mb-4 outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="girisYap()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl">GİRİŞ YAP</button>
+            <button onclick="sayfaAc('ana-sayfa')" class="w-full mt-4 text-slate-400 text-xs">Vazgeç</button>
+        </div>
+    </div>
+
+    <div id="ihale-ekle" class="hidden max-w-md mx-auto p-6 mt-10">
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border-2 border-red-500">
+            <h2 class="text-2xl font-black text-red-600 mb-6 uppercase italic">Yeni İhale Başlat</h2>
+            <input type="text" id="yeni-baslik" placeholder="Güvercin Cinsi ve Özelliği" class="w-full border p-4 rounded-2xl mb-3">
+            <input type="text" id="yeni-resim" placeholder="Resim URL (Link)" class="w-full border p-4 rounded-2xl mb-3">
+            <input type="number" id="yeni-fiyat" placeholder="Başlangıç Fiyatı (TL)" class="w-full border p-4 rounded-2xl mb-4">
+            <button onclick="ihaleYayinla()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-xl">YAYINLA</button>
+        </div>
+    </div>
+
     <script>
-        window.onload = function() {
-            const kayıtlıFiyat = localStorage.getItem('pro_fiyat');
-            const kayıtlıİsim = localStorage.getItem('pro_isim');
-            if(kayıtlıFiyat) {
-                document.getElementById('fiyat').innerText = formatPara(kayıtlıFiyat);
-                listeyeEkle(kayıtlıİsim, kayıtlıFiyat);
+        let currentUser = localStorage.getItem('user') || null;
+
+        function sayfaAc(id) {
+            ['ana-sayfa', 'giris-ekrani', 'ihale-ekle'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function girisYap() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+
+            if (user === 'admin' && pass === 'admin64') {
+                currentUser = 'admin';
+                localStorage.setItem('user', 'admin');
+                alert('Hoş geldin Patron!');
+                location.reload();
+            } else if (user && pass) {
+                currentUser = user;
+                localStorage.setItem('user', user);
+                alert('Giriş başarılı: ' + user);
+                location.reload();
+            } else {
+                alert('Bilgileri doldurun!');
             }
+        }
+
+        // Giriş Durumunu Kontrol Et
+        if (currentUser) {
+            document.getElementById('nav-butonlar').innerHTML = `
+                <span class="text-[10px] font-black bg-blue-100 text-blue-700 px-3 py-2 rounded-full uppercase">${currentUser}</span>
+                <button onclick="cikisYap()" class="text-[10px] font-bold text-red-500 ml-2">ÇIKIŞ</button>
+            `;
+            if (currentUser === 'admin') {
+                document.getElementById('admin-ekle-butonu').classList.remove('hidden');
+            }
+        }
+
+        function cikisYap() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        function ihaleYayinla() {
+            const b = document.getElementById('yeni-baslik').value;
+            const r = document.getElementById('yeni-resim').value;
+            const f = document.getElementById('yeni-fiyat').value;
+
+            if(!b || !f) return alert('Başlık ve fiyat zorunlu!');
+
+            localStorage.setItem('aktif_baslik', b);
+            localStorage.setItem('aktif_resim', r || 'https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=600');
+            localStorage.setItem('pro_fiyat', f);
+            
+            alert('İhale Başarıyla Yayına Alındı!');
+            location.reload();
+        }
+
+        // Sayfa yüklendiğinde adminin girdiği verileri çek
+        window.onload = function() {
+            const b = localStorage.getItem('aktif_baslik');
+            const r = localStorage.getItem('aktif_resim');
+            const f = localStorage.getItem('pro_fiyat');
+            
+            if(b) document.getElementById('ihale-baslik').innerText = b;
+            if(r) document.getElementById('ihale-resim').src = r;
+            if(f) document.getElementById('fiyat').innerText = new Intl.NumberFormat('tr-TR').format(f) + " TL";
         };
 
-        function formatPara(sayı) {
-            return new Intl.NumberFormat('tr-TR').format(sayı) + " TL";
-        }
-
         function teklifVer() {
-            const isim = prompt("Adınız Soyadınız:");
-            if(!isim) return;
+            if(!currentUser) return alert('Teklif vermek için giriş yapmalısınız!');
             
-            const miktar = prompt("Teklifiniz (Sadece rakam):");
-            if(!miktar || isNaN(miktar)) {
-                alert("Lütfen geçerli bir fiyat girin!");
-                return;
-            }
+            const miktar = prompt("Teklifiniz (TL):");
+            if(!miktar || isNaN(miktar)) return;
 
             const eskiFiyat = localStorage.getItem('pro_fiyat') || 0;
-            if(Number(miktar) <= Number(eskiFiyat)) {
-                alert("Teklifiniz mevcut fiyattan yüksek olmalıdır!");
-                return;
-            }
+            if(Number(miktar) <= Number(eskiFiyat)) return alert("Daha yüksek bir teklif verin!");
 
-            // Kaydet
             localStorage.setItem('pro_fiyat', miktar);
-            localStorage.setItem('pro_isim', isim);
-
-            // Arayüzü Güncelle
-            const fiyatDom = document.getElementById('fiyat');
-            fiyatDom.innerText = formatPara(miktar);
-            fiyatDom.classList.add('price-update');
-            setTimeout(() => fiyatDom.classList.remove('price-update'), 600);
-
-            listeyeEkle(isim, miktar);
-        }
-
-        function listeyeEkle(isim, miktar) {
-            const liste = document.getElementById('mesajlar');
-            const html = `
-                <div class="flex justify-between items-center p-4 bg-white border border-slate-100 rounded-2xl shadow-sm animate-in slide-in-from-top duration-300">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-500">
-                            ${isim.charAt(0).toUpperCase()}
-                        </div>
-                        <span class="text-sm font-bold text-slate-700">${isim}</span>
-                    </div>
-                    <span class="text-sm font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">${formatPara(miktar)}</span>
-                </div>
-            `;
-            liste.innerHTML = html + liste.innerHTML;
-        }
-
-        function adminLogin() {
-            const pass = prompt("Yönetici Şifresi:");
-            if(pass === "guvercin123") {
-                if(confirm("Tüm ihaleyi sıfırlamak istiyor musunuz?")) {
-                    localStorage.clear();
-                    location.reload();
-                }
-            }
+            location.reload();
         }
     </script>
 </body>
