@@ -10,14 +10,20 @@ header{background:#020617;padding:15px;display:flex;justify-content:space-betwee
 h1{margin:0;color:#facc15;font-size:20px}
 button{background:#facc15;border:none;padding:8px 12px;font-weight:bold;border-radius:4px;cursor:pointer}
 input,select,textarea{width:100%;padding:7px;margin-bottom:6px}
-.container{max-width:1000px;margin:auto;padding:15px}
+.container{max-width:1100px;margin:auto;padding:15px}
 .card{background:#020617;padding:12px;border-radius:8px;margin-bottom:12px}
 .hidden{display:none}
 img{width:100%;border-radius:6px}
 .image-box{position:relative}
-.owner{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#facc15;padding:4px 7px;border-radius:6px;font-size:12px;cursor:pointer}
-.filter{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}
+.owner{
+position:absolute;top:6px;left:6px;
+background:rgba(0,0,0,.75);
+padding:5px 7px;border-radius:6px;
+font-size:12px;color:#facc15;cursor:pointer
+}
+.owner small{display:block;color:#cbd5f5;font-size:11px}
 .danger{background:#dc2626;color:#fff}
+.timer{color:#38bdf8;font-weight:bold}
 </style>
 </head>
 <body>
@@ -30,14 +36,13 @@ img{width:100%;border-radius:6px}
 <div class="container">
 <div id="auth"></div>
 <div id="home"></div>
-<div id="profile" class="hidden"></div>
 <div id="chat" class="hidden"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBxNAZRJZiXDirJDAlm5dLtk0Tp3V-Ncck",
@@ -53,11 +58,9 @@ const auth = getAuth();
 const db = getFirestore();
 
 let user=null;
-
 const nav=document.getElementById("nav");
 const home=document.getElementById("home");
 const authBox=document.getElementById("auth");
-const profile=document.getElementById("profile");
 const chat=document.getElementById("chat");
 
 onAuthStateChanged(auth,u=>{
@@ -75,147 +78,140 @@ function renderNav(){
 
 window.logout=()=>auth.signOut();
 
-window.showLogin=()=>{
-authBox.innerHTML=`
+window.showLogin=()=>authBox.innerHTML=`
 <div class="card">
 <h3>Giriş</h3>
 <input id="le" placeholder="Email">
 <input id="lp" type="password" placeholder="Şifre">
 <button onclick="login()">Giriş</button>
 </div>`;
-}
 
-window.showRegister=()=>{
-authBox.innerHTML=`
+window.showRegister=()=>authBox.innerHTML=`
 <div class="card">
 <h3>Üye Ol</h3>
 <input id="re" placeholder="Email">
 <input id="rp" type="password" placeholder="Şifre">
+<input id="rt" placeholder="Telefon (05xxxxxxxxx)">
 <button onclick="register()">Üye Ol</button>
 </div>`;
-}
 
 window.login=()=>signInWithEmailAndPassword(auth,le.value,lp.value);
-window.register=()=>createUserWithEmailAndPassword(auth,re.value,rp.value);
+window.register=async()=>{
+  const u=await createUserWithEmailAndPassword(auth,re.value,rp.value);
+  await addDoc(collection(db,"users"),{
+    email:re.value,
+    phone:rt.value
+  });
+};
 
 function renderHome(){
-profile.classList.add("hidden");
+authBox.innerHTML="";
 chat.classList.add("hidden");
 home.classList.remove("hidden");
 
-home.innerHTML = user ? `
+home.innerHTML=user?`
 <div class="card">
 <h3>İlan Ekle</h3>
 <input id="name" placeholder="İlan başlığı">
-<select id="irk">
-<option>Saya</option><option>Dolapçı</option><option>Taklacı</option>
-<option>Kelebek</option><option>Posta</option>
-</select>
-<select id="cinsiyet"><option>Erkek</option><option>Dişi</option></select>
-<input id="yas" type="number" placeholder="Yaş">
-<select id="pedigree">
-<option>Yok</option><option>Var</option>
-</select>
-<select id="asi">
-<option>Aşısız</option><option>Aşılı</option>
-</select>
 <input id="price" type="number" placeholder="Başlangıç ₺">
 <input id="photo" type="file">
 <button onclick="addAuction()">Başlat</button>
 </div>`:"";
 
-home.innerHTML+=`
-<div class="card filter">
-<select id="fIrk"><option value="">Irk</option><option>Saya</option><option>Dolapçı</option><option>Taklacı</option><option>Kelebek</option><option>Posta</option></select>
-<select id="fC"><option value="">Cinsiyet</option><option>Erkek</option><option>Dişi</option></select>
-<select id="fA"><option value="">Aşı</option><option>Aşılı</option><option>Aşısız</option></select>
-<button onclick="renderList()">Filtrele</button>
-</div>
-<div id="list"></div>`;
+onSnapshot(collection(db,"auctions"),snap=>{
+home.innerHTML+=`<h3>İlanlar</h3>`;
+snap.forEach(async d=>{
+const a=d.data();
+const now=Date.now();
+let end=a.end||a.start+86400000;
+const remaining=end-now;
+const bids=a.bids||[];
+const last=bids[bids.length-1];
+const ended=remaining<=0;
+const ownerPhone=(await getDoc(doc(db,"users",a.owner))).data()?.phone;
 
-renderList();
+home.innerHTML+=`
+<div class="card">
+<div class="image-box">
+<div class="owner">
+@${a.owner}
+<small>${ownerPhone||""}</small>
+</div>
+<img src="${a.photo}">
+</div>
+<b>${a.name}</b>
+<p>💰 ${a.price} ₺</p>
+<p class="timer">${ended?"İhale bitti":"Kalan: "+format(remaining)}</p>
+<p>Son teklif: ${last?last.user:"Yok"}</p>
+${!ended && user && user.email!==a.owner?`<button onclick='bid("${d.id}",${a.price})'>Teklif Ver</button>`:""}
+${user?.email===a.owner?`<button class="danger" onclick="del('${d.id}')">Sil</button>`:""}
+${ended && last?.user===user?.email?`<button onclick='openChat("${d.id}")'>💬 Satıcıyla Sohbet</button>`:""}
+</div>`;
+});
+});
 }
 
 window.addAuction=()=>{
 const r=new FileReader();
 r.onload=e=>{
 addDoc(collection(db,"auctions"),{
-name:name.value,irk:irk.value,cinsiyet:cinsiyet.value,
-yas:Number(yas.value),pedigree:pedigree.value,asi:asi.value,
-price:Number(price.value),photo:e.target.result,
-owner:user.email,start:Date.now(),bids:[]
+name:name.value,
+price:Number(price.value),
+photo:e.target.result,
+owner:user.email,
+start:Date.now(),
+end:Date.now()+86400000,
+bids:[]
 });
 };
 r.readAsDataURL(photo.files[0]);
-}
+};
 
-function renderList(){
-const list=document.getElementById("list");
-list.innerHTML="";
-onSnapshot(collection(db,"auctions"),snap=>{
-list.innerHTML="";
-snap.forEach(d=>{
-const a=d.data();
-if(fIrk.value && a.irk!==fIrk.value)return;
-if(fC.value && a.cinsiyet!==fC.value)return;
-if(fA.value && a.asi!==fA.value)return;
-
-const last=a.bids[a.bids.length-1];
-const ended=Date.now()>a.start+86400000;
-const win=ended && last?.user===user?.email;
-
-list.innerHTML+=`
-<div class="card">
-<div class="image-box">
-<span class="owner" onclick="showProfile('${a.owner}')">@${a.owner}</span>
-<img src="${a.photo}">
-</div>
-<b>${a.name}</b>
-<p>${a.irk} • ${a.cinsiyet} • ${a.yas} yaş</p>
-<p>${a.asi} ${a.irk==="Posta"?"• Pedigree: "+a.pedigree:""}</p>
-<p>💰 ${a.price} ₺</p>
-<p>Son teklif: ${last?last.user:"Yok"}</p>
-${!ended && user && user.email!==a.owner?`<button onclick='bid("${d.id}",${JSON.stringify(a.bids)},${a.price})'>Teklif</button>`:""}
-${user?.email===a.owner?`<button class="danger" onclick="del('${d.id}')">Sil</button>`:""}
-${win?`<button onclick='openChat("${d.id}", "${a.owner}")'>💬 Mesajlaş</button>`:""}
-</div>`;
+window.bid=async(id,price)=>{
+const v=Number(prompt("Teklif ₺"));
+if(v<=price) return alert("Daha yüksek olmalı");
+const ref=doc(db,"auctions",id);
+const snap=await getDoc(ref);
+const a=snap.data();
+let end=a.end;
+if(end-Date.now()<300000) end+=300000;
+await updateDoc(ref,{
+price:v,
+end:end,
+bids:[...(a.bids||[]),{user:user.email,amount:v}]
 });
-});
-}
-
-window.bid=(id,bids,price)=>{
-const v=prompt("Teklif ₺");
-if(Number(v)<=price)return alert("Daha yüksek olmalı");
-updateDoc(doc(db,"auctions",id),{
-price:Number(v),
-bids:[...bids,{user:user.email,amount:Number(v)}]
-});
-}
+};
 
 window.del=id=>deleteDoc(doc(db,"auctions",id));
 
-window.showProfile=email=>{
-home.classList.add("hidden");
-profile.classList.remove("hidden");
-profile.innerHTML=`<div class="card"><h2>${email}</h2></div>`;
-}
-
-window.openChat=(aid,owner)=>{
+window.openChat=id=>{
 home.classList.add("hidden");
 chat.classList.remove("hidden");
-const q=query(collection(db,"messages"),where("auction","==",aid),orderBy("time"));
-onSnapshot(q,s=>{
+onSnapshot(collection(db,"messages"),snap=>{
 chat.innerHTML="<h3>Sohbet</h3>";
-s.forEach(m=>chat.innerHTML+=`<div class="card"><b>${m.data().from}</b><br>${m.data().text}</div>`);
-chat.innerHTML+=`<textarea id="msg"></textarea><button onclick="sendMsg('${aid}')">Gönder</button>`;
+snap.forEach(m=>{
+if(m.data().auction===id)
+chat.innerHTML+=`<div class="card"><b>${m.data().from}</b><br>${m.data().text}</div>`;
 });
-}
+chat.innerHTML+=`
+<textarea id="msg"></textarea>
+<button onclick="sendMsg('${id}')">Gönder</button>`;
+});
+};
 
 window.sendMsg=id=>{
 addDoc(collection(db,"messages"),{
 auction:id,from:user.email,text:msg.value,time:Date.now()
 });
 msg.value="";
+};
+
+function format(ms){
+const s=Math.floor(ms/1000);
+const h=String(Math.floor(s/3600)).padStart(2,"0");
+const m=String(Math.floor((s%3600)/60)).padStart(2,"0");
+const sec=String(s%60).padStart(2,"0");
+return `${h}:${m}:${sec}`;
 }
 </script>
 </body>
