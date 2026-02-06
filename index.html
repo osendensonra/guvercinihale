@@ -3,87 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuvercinIhale | Yönetim Paneli</title>
+    <title>GuvercinIhale.com | Üye Sistemi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>.hidden { display: none; }</style>
+    <style>
+        .hidden { display: none; }
+        .modal-bg { background: rgba(0,0,0,0.8); }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-900">
 
-    <nav class="bg-blue-900 p-4 text-white flex justify-between items-center sticky top-0 z-50">
-        <h1 class="font-bold">GUVERCİNİHALE</h1>
-        <div class="flex space-x-2 text-xs">
-            <button onclick="showPage('home')" class="bg-blue-800 px-3 py-1 rounded">İhaleler</button>
-            <button onclick="adminLogin()" id="adminBtn" class="bg-red-600 px-3 py-1 rounded">YÖNETİM</button>
+    <nav class="bg-blue-900 p-4 text-white shadow-xl sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 onclick="showPage('home')" class="font-black text-xl cursor-pointer">GUVERCİNİHALE</h1>
+            <div id="nav-links" class="flex space-x-3 text-xs font-bold">
+                <button onclick="showPage('login')" class="bg-blue-700 px-3 py-1 rounded-full">GİRİŞ YAP</button>
+                <button onclick="adminLogin()" class="opacity-20 hover:opacity-100 transition-opacity">●</button>
+            </div>
         </div>
     </nav>
 
-    <div id="home" class="p-4 container mx-auto max-w-md">
-        <div id="ihale-listesi">
-            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6 border">
-                <img src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=400" class="w-full h-40 object-cover">
-                <div class="p-4">
-                    <h3 class="font-bold text-lg">Mavi Şebap - Erkek</h3>
-                    <p class="text-blue-700 font-bold text-xl">2.450 TL</p>
-                    <button class="w-full mt-3 bg-blue-800 text-white py-2 rounded-lg font-bold">Teklif Ver</button>
-                </div>
+    <div id="home" class="container mx-auto p-4 max-w-md">
+        <h2 class="font-bold text-lg mb-4 text-blue-900">Aktif İhaleler</h2>
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 mb-6">
+            <img src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=400" class="w-full h-44 object-cover">
+            <div class="p-4">
+                <h3 class="font-bold text-lg">Gümüş Şebap Erkek</h3>
+                <p class="text-blue-700 font-black text-xl">1.850 TL</p>
+                <button onclick="checkAuth()" class="w-full mt-3 bg-blue-800 text-white py-3 rounded-xl font-bold">TEKLİF VER / YORUM YAP</button>
             </div>
         </div>
     </div>
 
-    <div id="admin-panel" class="hidden p-4 container mx-auto max-w-md">
-        <div class="bg-white p-6 rounded-2xl shadow-2xl border-2 border-red-500">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-red-600 italic">PATRON PANELİ</h2>
-                <button onclick="showPage('home')" class="text-xs bg-gray-200 px-2 py-1 rounded">Kapat</button>
-            </div>
+    <div id="login" class="hidden container mx-auto p-6 max-w-md mt-10">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl border">
+            <h2 class="text-2xl font-black mb-6 text-center text-blue-900">Üye Ol / Giriş Yap</h2>
+            <input type="text" id="regName" placeholder="Adınız Soyadınız" class="w-full border rounded-2xl p-4 mb-3 bg-gray-50 outline-none">
+            <input type="tel" id="regPhone" placeholder="Telefon Numaranız" class="w-full border rounded-2xl p-4 mb-4 bg-gray-50 outline-none">
+            <button onclick="registerUser()" class="w-full bg-blue-800 text-white py-4 rounded-2xl font-black shadow-lg">HESAP OLUŞTUR</button>
+            <p class="text-xs text-center mt-4 text-gray-400 font-bold uppercase tracking-widest">Sadece üyeler teklif verebilir</p>
+        </div>
+    </div>
 
-            <div class="mb-8 border-b pb-6">
-                <h3 class="font-bold mb-3 text-sm text-gray-500 uppercase">Yeni İhale Başlat</h3>
-                <input type="text" id="kCins" placeholder="Kuşun Cinsi" class="w-full border p-3 rounded-xl mb-2 text-sm">
-                <input type="number" id="kFiyat" placeholder="Başlangıç Fiyatı" class="w-full border p-3 rounded-xl mb-2 text-sm">
-                <input type="text" id="kResim" placeholder="Resim Linki (Opsiyonel)" class="w-full border p-3 rounded-xl mb-3 text-sm">
-                <button onclick="ilanEkle()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg">YAYINLA</button>
-            </div>
-
-            <div>
-                <h3 class="font-bold mb-3 text-sm text-gray-500 uppercase">Aktif İhaleleri Yönet</h3>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border">
-                        <span class="text-sm font-bold">Mavi Şebap...</span>
-                        <div class="flex space-x-1">
-                            <button class="bg-blue-500 text-white p-2 rounded-lg text-[10px]">BİTİR</button>
-                            <button class="bg-red-500 text-white p-2 rounded-lg text-[10px]">SİL</button>
-                        </div>
-                    </div>
+    <div id="admin-panel" class="hidden container mx-auto p-6 max-w-md">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border-4 border-red-600">
+            <h2 class="text-2xl font-black text-red-600 mb-6 text-center italic underline">PATRON PANELİ</h2>
+            
+            <div class="space-y-4">
+                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                    <h3 class="font-bold text-sm text-red-800 mb-2">SİTEYİ YÖNET</h3>
+                    <button class="w-full bg-blue-600 text-white py-2 rounded-lg text-sm mb-2">Tüm Üyeleri Gör</button>
+                    <button class="w-full bg-red-600 text-white py-2 rounded-lg text-sm">İhale Sonlandır (BİTİR)</button>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-xl border">
+                    <h3 class="font-bold text-sm text-gray-700 mb-2">YENİ KUŞ EKLE</h3>
+                    <input type="text" placeholder="Cins" class="w-full border p-2 mb-2 text-sm rounded-lg">
+                    <input type="number" placeholder="Başlangıç Fiyat" class="w-full border p-2 mb-2 text-sm rounded-lg">
+                    <button class="w-full bg-green-600 text-white py-2 rounded-lg font-bold">İHALEYİ AÇ</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        let currentUser = null;
+
         function showPage(p) {
             document.getElementById('home').classList.add('hidden');
+            document.getElementById('login').classList.add('hidden');
             document.getElementById('admin-panel').classList.add('hidden');
             document.getElementById(p).classList.remove('hidden');
         }
 
-        function adminLogin() {
-            let pass = prompt("Yönetici Şifresi:");
-            if(pass === "guvercin123") {
-                showPage('admin-panel');
+        function registerUser() {
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            if(!name || !phone) return alert("Lütfen bilgileri doldurun!");
+            
+            currentUser = { name: name, phone: phone };
+            alert("Hoşgeldin " + name + "! Artık teklif verebilirsin.");
+            showPage('home');
+            document.getElementById('nav-links').innerHTML = `<span class="text-white text-[10px] mt-2">${name.toUpperCase()}</span>`;
+        }
+
+        function checkAuth() {
+            if(!currentUser) {
+                alert("Teklif vermek için önce üye olmalısınız!");
+                showPage('login');
             } else {
-                alert("Yetkisiz Giriş!");
+                alert("Teklif verme ekranı açılıyor...");
             }
         }
 
-        function ilanEkle() {
-            const cins = document.getElementById('kCins').value;
-            const fiyat = document.getElementById('kFiyat').value;
-            if(!cins || !fiyat) return alert("Bilgileri doldur!");
-            
-            // Burada yeni ilan listeye eklenecek
-            alert("İhale başarıyla eklendi! (Canlı veritabanı bağlandığında kalıcı olacak)");
-            showPage('home');
+        function adminLogin() {
+            let pass = prompt("Gizli Patron Şifresi:");
+            if(pass === "guvercin123") {
+                showPage('admin-panel');
+            } else {
+                alert("Buraya sadece site sahibi girebilir!");
+            }
         }
     </script>
 </body>
