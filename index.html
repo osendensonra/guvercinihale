@@ -18,4 +18,219 @@ header{
     justify-content:space-between;
     align-items:center;
 }
-header
+header h1{
+    margin:0;
+    color:#facc15;
+    font-size:20px;
+}
+button{
+    background:#facc15;
+    border:none;
+    padding:10px 14px;
+    font-weight:bold;
+    cursor:pointer;
+    border-radius:4px;
+}
+input{
+    width:100%;
+    padding:10px;
+    margin-bottom:8px;
+}
+.container{
+    padding:20px;
+    max-width:900px;
+    margin:auto;
+}
+.card{
+    background:#020617;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+.small{
+    color:#cbd5f5;
+    font-size:14px;
+}
+.hidden{display:none;}
+img{
+    width:100%;
+    border-radius:6px;
+    margin-bottom:10px;
+}
+.danger{
+    background:#dc2626;
+    color:#fff;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>🕊️ Güvercin Pazarı TR</h1>
+    <div id="authBtns">
+        <button onclick="showLogin()">Giriş</button>
+        <button onclick="showRegister()">Üye Ol</button>
+    </div>
+    <div id="userBox" class="hidden">
+        <span id="userName"></span>
+        <button onclick="logout()">Çıkış</button>
+    </div>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="login" class="card hidden">
+<h3>🔐 Giriş Yap</h3>
+<input id="loginUser" placeholder="Kullanıcı adı">
+<input id="loginPass" type="password" placeholder="Şifre">
+<button onclick="login()">Giriş</button>
+</div>
+
+<!-- REGISTER -->
+<div id="register" class="card hidden">
+<h3>🕊️ Üye Ol</h3>
+<input id="regUser" placeholder="Kullanıcı adı">
+<input id="regPass" type="password" placeholder="Şifre">
+<button onclick="register()">Üye Ol</button>
+</div>
+
+<!-- ADD AUCTION -->
+<div id="addAuction" class="card hidden">
+<h3>➕ Güvercin Ekle (24 Saat İhale)</h3>
+<input id="name" placeholder="Güvercin adı / ırk">
+<input id="price" type="number" placeholder="Başlangıç fiyatı ₺">
+<input id="photo" type="file" accept="image/*">
+<button onclick="addAuction()">İhaleyi Başlat</button>
+</div>
+
+<h3>🔥 Aktif İhaleler</h3>
+<div id="auctions"></div>
+
+</div>
+
+<script>
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let auctions = JSON.parse(localStorage.getItem("auctions")) || [];
+let user = localStorage.getItem("user");
+
+const loginBox = document.getElementById("login");
+const registerBox = document.getElementById("register");
+const addBox = document.getElementById("addAuction");
+const authBtns = document.getElementById("authBtns");
+const userBox = document.getElementById("userBox");
+const userName = document.getElementById("userName");
+
+function init(){
+    if(user){
+        authBtns.classList.add("hidden");
+        userBox.classList.remove("hidden");
+        userName.innerText = user;
+        addBox.classList.remove("hidden");
+    }
+    render();
+}
+init();
+
+function showLogin(){
+    loginBox.classList.toggle("hidden");
+    registerBox.classList.add("hidden");
+}
+function showRegister(){
+    registerBox.classList.toggle("hidden");
+    loginBox.classList.add("hidden");
+}
+
+function register(){
+    const u = regUser.value;
+    const p = regPass.value;
+    if(!u||!p) return alert("Tüm alanları doldur");
+    if(users.find(x=>x.username===u)) return alert("Kullanıcı var");
+    users.push({username:u,password:p});
+    localStorage.setItem("users",JSON.stringify(users));
+    alert("Üyelik tamam");
+    registerBox.classList.add("hidden");
+}
+
+function login(){
+    const u = loginUser.value;
+    const p = loginPass.value;
+    const found = users.find(x=>x.username===u && x.password===p);
+    if(!found) return alert("Hatalı giriş");
+    localStorage.setItem("user",u);
+    location.reload();
+}
+
+function logout(){
+    localStorage.removeItem("user");
+    location.reload();
+}
+
+function addAuction(){
+    const name = document.getElementById("name").value;
+    const price = document.getElementById("price").value;
+    const file = document.getElementById("photo").files[0];
+    if(!name||!price||!file) return alert("Eksik bilgi");
+
+    const r = new FileReader();
+    r.onload = e=>{
+        auctions.push({
+            id:Date.now(),
+            name,
+            price:Number(price),
+            photo:e.target.result,
+            owner:user,
+            start:Date.now(),
+            bids:[]
+        });
+        localStorage.setItem("auctions",JSON.stringify(auctions));
+        location.reload();
+    };
+    r.readAsDataURL(file);
+}
+
+function bid(id){
+    const a = auctions.find(x=>x.id===id);
+    if(Date.now()>a.start+86400000) return alert("İhale bitti");
+    const amt = prompt("Teklif ₺");
+    if(!amt) return;
+    a.bids.push({user,amount:Number(amt)});
+    a.price = Number(amt);
+    localStorage.setItem("auctions",JSON.stringify(auctions));
+    location.reload();
+}
+
+function removeAuction(id){
+    auctions = auctions.filter(x=>x.id!==id);
+    localStorage.setItem("auctions",JSON.stringify(auctions));
+    location.reload();
+}
+
+function render(){
+    const el = document.getElementById("auctions");
+    el.innerHTML="";
+    auctions.forEach(a=>{
+        const end = a.start+86400000;
+        const ended = Date.now()>end;
+        let winner=null;
+        if(a.bids.length){
+            winner=a.bids.reduce((m,b)=>b.amount>m.amount?b:m).user;
+        }
+        el.innerHTML+=`
+        <div class="card">
+            <img src="${a.photo}">
+            <h4>${a.name}</h4>
+            <p>💰 ${a.price} ₺</p>
+            <p class="small">${ended?"⛔ İhale sona erdi":"⏱️ 24 saatlik ihale aktif"}</p>
+            ${ended
+                ? winner?`<b style="color:#22c55e">🏆 Kazanan: ${winner}</b>`:`Teklif yok`
+                : user?`<button onclick="bid(${a.id})">Teklif Ver</button>`:``
+            }
+            ${a.owner===user?`<button class="danger" onclick="removeAuction(${a.id})">Sil</button>`:""}
+        </div>`;
+    });
+}
+</script>
+
+</body>
+</html>
