@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuvercinIhale.com | Canlı Mezat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>.hidden { display: none; }</style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-800 p-4 text-white flex justify-between sticky top-0 z-50">
+        <h1 class="font-bold">GUVERCİNİHALE</h1>
+        <div class="text-xs space-x-2">
+            <button onclick="document.getElementById('h').classList.remove('hidden');document.getElementById('a').classList.add('hidden')">İHALELER</button>
+            <button onclick="document.getElementById('a').classList.remove('hidden');document.getElementById('h').classList.add('hidden')">İLAN VER</button>
+        </div>
+    </nav>
+    <div id="h" class="p-4">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+            <img src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=500" class="w-full h-40 object-cover">
+            <div class="p-4">
+                <h3 class="font-bold text-lg uppercase">Mavi Şebap - Örnek İlan</h3>
+                <p class="text-blue-700 font-bold text-xl">1.500 TL</p>
+                <div class="mt-4 bg-gray-50 p-2 text-xs border h-20 overflow-y-auto" id="yorumlar">
+                    <p><strong>Admin:</strong> Hoş geldiniz! Teklifleri buradan yapabilirsiniz.</p>
+                </div>
+                <input id="inp" type="text" placeholder="Mesaj veya Teklif..." class="w-full border p-2 mt-2 text-sm rounded">
+                <button onclick="document.getElementById('yorumlar').innerHTML+='<p><strong>Siz:</strong> '+document.getElementById('inp').value+'</p>'" class="w-full mt-2 bg-blue-800 text-white py-2 rounded font-bold">GÖNDER</button>
+            </div>
+        </div>
+    </div>
+    <div id="a" class="p-4 hidden">
+        <div class="bg-white p-4 rounded-xl shadow-md">
+            <h2 class="font-bold mb-4">Yeni İhale</h2>
+            <input type="text" placeholder="Cins" class="w-full border p-2 mb-2 rounded">
+            <input type="number" placeholder="Başlangıç Fiyatı" class="w-full border p-2 mb-2 rounded">
+            <input type="file" class="w-full mb-4">
+            <button class="w-full bg-green-600 text-white py-3 rounded font-bold">YAYINLA</button>
+        </div>
+    </div>
+</body>
+</html>
