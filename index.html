@@ -17,8 +17,6 @@ input{width:100%;padding:8px;margin-bottom:6px}
 .hidden{display:none}
 img{width:100%;border-radius:6px;margin-bottom:8px}
 .danger{background:#dc2626;color:#fff}
-
-/* 👤 İLAN SAHİBİ ETİKETİ */
 .image-box{position:relative}
 .owner-badge{
   position:absolute;
@@ -30,6 +28,7 @@ img{width:100%;border-radius:6px;margin-bottom:8px}
   border-radius:6px;
   font-size:13px;
   font-weight:bold;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -47,14 +46,14 @@ img{width:100%;border-radius:6px;margin-bottom:8px}
 <div id="login" class="card hidden">
 <h3>Giriş</h3>
 <input id="loginUser" placeholder="Kullanıcı adı">
-<input id="loginPass" type="password">
+<input id="loginPass" type="password" placeholder="Şifre">
 <button onclick="login()">Giriş Yap</button>
 </div>
 
 <div id="register" class="card hidden">
 <h3>Üye Ol</h3>
 <input id="regUser" placeholder="Kullanıcı adı">
-<input id="regPass" type="password">
+<input id="regPass" type="password" placeholder="Şifre">
 <button onclick="register()">Üye Ol</button>
 </div>
 </div>
@@ -68,14 +67,10 @@ const home=document.getElementById("home");
 const profile=document.getElementById("profile");
 const nav=document.getElementById("nav");
 
-function showHome(){profile.classList.add("hidden");home.classList.remove("hidden");renderHome()}
-function showProfile(){home.classList.add("hidden");profile.classList.remove("hidden");renderProfile()}
-function logout(){localStorage.removeItem("user");location.reload()}
-
 function renderNav(){
 nav.innerHTML=user?
 `<button onclick="showHome()">Ana Sayfa</button>
- <button onclick="showProfile()">Profilim</button>
+ <button onclick="showProfile('${user}')">Profilim</button>
  <button onclick="logout()">Çıkış</button>`
 :
 `<button onclick="toggle('login')">Giriş</button>
@@ -89,9 +84,14 @@ register.classList.add("hidden");
 document.getElementById(id).classList.toggle("hidden");
 }
 
+function logout(){
+localStorage.removeItem("user");
+location.reload();
+}
+
 function register(){
-if(!regUser.value||!regPass.value)return alert("Eksik");
-if(users.find(x=>x.username===regUser.value))return alert("Var");
+if(!regUser.value||!regPass.value)return alert("Eksik bilgi");
+if(users.find(x=>x.username===regUser.value))return alert("Kullanıcı var");
 users.push({username:regUser.value,password:regPass.value});
 localStorage.setItem("users",JSON.stringify(users));
 alert("Üyelik tamam");
@@ -102,6 +102,27 @@ const f=users.find(x=>x.username===loginUser.value&&x.password===loginPass.value
 if(!f)return alert("Hatalı");
 localStorage.setItem("user",loginUser.value);
 location.reload();
+}
+
+function showHome(){
+profile.classList.add("hidden");
+home.classList.remove("hidden");
+renderHome();
+}
+
+function showProfile(username){
+home.classList.add("hidden");
+profile.classList.remove("hidden");
+
+let userAuctions=auctions.filter(a=>a.owner===username);
+
+profile.innerHTML=`
+<h2>👤 ${username}</h2>
+<h3>🕊️ Açtığı İlanlar</h3>
+${userAuctions.length
+? userAuctions.map(a=>`<div class="card">${a.name} - ${a.price} ₺</div>`).join("")
+: "İlan yok"}
+`;
 }
 
 function addAuction(){
@@ -127,11 +148,18 @@ r.readAsDataURL(f);
 function bid(id){
 if(!user)return alert("Giriş yap");
 const a=auctions.find(x=>x.id===id);
-if(Date.now()>a.start+86400000)return alert("Bitti");
+if(Date.now()>a.start+86400000)return alert("İhale bitti");
 const amt=prompt("Teklif ₺");
 if(!amt)return;
 a.bids.push({user,amount:Number(amt)});
 a.price=Number(amt);
+localStorage.setItem("auctions",JSON.stringify(auctions));
+renderHome();
+}
+
+function deleteAuction(id){
+if(!confirm("İlan silinsin mi?"))return;
+auctions=auctions.filter(a=>a.id!==id);
 localStorage.setItem("auctions",JSON.stringify(auctions));
 renderHome();
 }
@@ -153,28 +181,23 @@ const last=a.bids[a.bids.length-1];
 home.innerHTML+=`
 <div class="card">
 <div class="image-box">
-<span class="owner-badge">@${a.owner}</span>
+<span class="owner-badge" onclick="showProfile('${a.owner}')">@${a.owner}</span>
 <img src="${a.photo}">
 </div>
 <b>${a.name}</b>
 <p>💰 ${a.price} ₺</p>
 <p class="small">👤 Son teklif: ${last?last.user:"Yok"}</p>
-${Date.now()<a.start+86400000?`<button onclick="bid(${a.id})">Teklif Ver</button>`:"⛔ İhale bitti"}
+${Date.now()<a.start+86400000
+? `<button onclick="bid(${a.id})">Teklif Ver</button>`
+: "⛔ İhale bitti"}
+${user===a.owner
+? `<button class="danger" onclick="deleteAuction(${a.id})">İlanı Sil</button>`
+: ""}
 </div>`;
 });
 }
 renderHome();
-
-function renderProfile(){
-let mine=auctions.filter(a=>a.owner===user);
-profile.innerHTML=`
-<h2>👤 ${user}</h2>
-<h3>Açtığım İlanlar</h3>
-${mine.map(a=>`<div class="card">${a.name} - ${a.price} ₺</div>`).join("")||"Yok"}
-`;
-}
 </script>
 
 </body>
 </html>
-
