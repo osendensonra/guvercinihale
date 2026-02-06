@@ -6,24 +6,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
-header{background:#020617;padding:15px;display:flex;justify-content:space-between;align-items:center}
-header h1{color:#facc15;font-size:20px;margin:0}
-nav button{margin-left:6px}
+header{background:#020617;padding:15px;display:flex;justify-content:space-between}
+h1{margin:0;color:#facc15;font-size:20px}
 button{background:#facc15;border:none;padding:8px 12px;font-weight:bold;border-radius:4px;cursor:pointer}
-input,textarea{width:100%;padding:8px;margin-bottom:6px}
-.container{max-width:900px;margin:auto;padding:20px}
-.card{background:#020617;padding:15px;border-radius:8px;margin-bottom:12px}
-.small{color:#cbd5f5;font-size:14px}
+input,select,textarea{width:100%;padding:7px;margin-bottom:6px}
+.container{max-width:1000px;margin:auto;padding:15px}
+.card{background:#020617;padding:12px;border-radius:8px;margin-bottom:12px}
 .hidden{display:none}
-img{width:100%;border-radius:6px;margin-bottom:8px}
+img{width:100%;border-radius:6px}
 .image-box{position:relative}
-.owner-badge{
-  position:absolute;top:8px;left:8px;
-  background:rgba(0,0,0,0.75);
-  color:#facc15;padding:4px 8px;
-  border-radius:6px;font-size:13px;
-  font-weight:bold;cursor:pointer
-}
+.owner{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#facc15;padding:4px 7px;border-radius:6px;font-size:12px;cursor:pointer}
+.filter{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}
 .danger{background:#dc2626;color:#fff}
 </style>
 </head>
@@ -31,43 +24,21 @@ img{width:100%;border-radius:6px;margin-bottom:8px}
 
 <header>
 <h1>🕊️ Güvercin Pazarı TR</h1>
-<nav id="nav"></nav>
+<div id="nav"></div>
 </header>
 
 <div class="container">
+<div id="auth"></div>
 <div id="home"></div>
 <div id="profile" class="hidden"></div>
 <div id="chat" class="hidden"></div>
-
-<div id="login" class="card hidden">
-<h3>Giriş</h3>
-<input id="loginEmail" placeholder="Email">
-<input id="loginPass" type="password" placeholder="Şifre">
-<button onclick="login()">Giriş Yap</button>
 </div>
 
-<div id="register" class="card hidden">
-<h3>Üye Ol</h3>
-<input id="regEmail" placeholder="Email">
-<input id="regPass" type="password" placeholder="Şifre">
-<button onclick="register()">Üye Ol</button>
-</div>
-</div>
-
-<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth, createUserWithEmailAndPassword,
-  signInWithEmailAndPassword, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  getFirestore, collection, addDoc, getDocs,
-  query, where, doc, deleteDoc, updateDoc,
-  onSnapshot, orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* 🔐 CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBxNAZRJZiXDirJDAlm5dLtk0Tp3V-Ncck",
   authDomain: "guvercin-pazari-tr.firebaseapp.com",
@@ -81,161 +52,171 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
-/* 🧠 STATE */
-let currentUser = null;
+let user=null;
 
-/* 📌 DOM */
-const home = document.getElementById("home");
-const profile = document.getElementById("profile");
-const chat = document.getElementById("chat");
-const nav = document.getElementById("nav");
-const loginBox = document.getElementById("login");
-const registerBox = document.getElementById("register");
+const nav=document.getElementById("nav");
+const home=document.getElementById("home");
+const authBox=document.getElementById("auth");
+const profile=document.getElementById("profile");
+const chat=document.getElementById("chat");
 
-/* 🔝 NAV */
-function renderNav(){
-  nav.innerHTML = currentUser ?
-  `<button onclick="showHome()">Ana Sayfa</button>
-   <button onclick="showProfile('${currentUser.email}')">Profilim</button>
-   <button onclick="logout()">Çıkış</button>`
-  :
-  `<button onclick="toggle('login')">Giriş</button>
-   <button onclick="toggle('register')">Üye Ol</button>`;
-}
-window.toggle = id => {
-  loginBox.classList.add("hidden");
-  registerBox.classList.add("hidden");
-  document.getElementById(id).classList.toggle("hidden");
-};
-
-window.logout = () => auth.signOut();
-
-/* 👤 AUTH */
-window.register = () =>
-createUserWithEmailAndPassword(auth, regEmail.value, regPass.value)
-.catch(e=>alert(e.message));
-
-window.login = () =>
-signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value)
-.catch(e=>alert(e.message));
-
-onAuthStateChanged(auth, user=>{
-  currentUser = user;
+onAuthStateChanged(auth,u=>{
+  user=u;
   renderNav();
-  showHome();
+  renderHome();
 });
 
-/* ➕ AUCTION */
-window.addAuction = async () => {
-  if(!currentUser) return alert("Giriş yap");
-  const file = photo.files[0];
-  const r = new FileReader();
-  r.onload = async e => {
-    await addDoc(collection(db,"auctions"),{
-      name:name.value,
-      price:Number(price.value),
-      photo:e.target.result,
-      owner:currentUser.email,
-      start:Date.now(),
-      bids:[]
-    });
-  };
-  r.readAsDataURL(file);
-};
-
-/* 💰 BID */
-window.bid = async (id,price,bids)=>{
-  const amt = prompt("Teklif ₺");
-  if(!amt) return;
-  await updateDoc(doc(db,"auctions",id),{
-    price:Number(amt),
-    bids:[...bids,{user:currentUser.email,amount:Number(amt)}]
-  });
-};
-
-/* 🗑️ DELETE */
-window.del = id => deleteDoc(doc(db,"auctions",id));
-
-/* 💬 CHAT */
-window.openChat = async (auction)=>{
-  home.classList.add("hidden");
-  chat.classList.remove("hidden");
-
-  const q = query(
-    collection(db,"messages"),
-    where("auction","==",auction.id),
-    orderBy("time")
-  );
-
-  onSnapshot(q,snap=>{
-    chat.innerHTML = `<h3>💬 Mesajlaşma</h3>`;
-    snap.forEach(d=>{
-      chat.innerHTML += `<div class="card">
-        <b>${d.data().from}</b><br>${d.data().text}
-      </div>`;
-    });
-    chat.innerHTML += `
-    <textarea id="msg"></textarea>
-    <button onclick="sendMsg('${auction.id}')">Gönder</button>`;
-  });
-};
-
-window.sendMsg = async id=>{
-  await addDoc(collection(db,"messages"),{
-    auction:id,
-    from:currentUser.email,
-    text:msg.value,
-    time:Date.now()
-  });
-  msg.value="";
-};
-
-/* 🏠 HOME */
-function showHome(){
-  profile.classList.add("hidden");
-  chat.classList.add("hidden");
-  home.classList.remove("hidden");
-
-  home.innerHTML = currentUser ? `
-  <div class="card">
-    <input id="name" placeholder="Güvercin adı">
-    <input id="price" type="number" placeholder="Başlangıç ₺">
-    <input id="photo" type="file">
-    <button onclick="addAuction()">İhaleyi Başlat</button>
-  </div>` : "";
-
-  onSnapshot(collection(db,"auctions"), snap=>{
-    home.innerHTML += "<h3>İlanlar</h3>";
-    snap.forEach(d=>{
-      const a = d.data();
-      const last = a.bids[a.bids.length-1];
-      const ended = Date.now()>a.start+86400000;
-      const win = ended && last && last.user===currentUser?.email;
-
-      home.innerHTML += `
-      <div class="card">
-        <div class="image-box">
-          <span class="owner-badge" onclick="showProfile('${a.owner}')">@${a.owner}</span>
-          <img src="${a.photo}">
-        </div>
-        <b>${a.name}</b>
-        <p>💰 ${a.price} ₺</p>
-        <p class="small">👤 Son teklif: ${last?last.user:"Yok"}</p>
-        ${!ended && currentUser ? `<button onclick="bid('${d.id}',${a.price},${JSON.stringify(a.bids)})">Teklif Ver</button>`:""}
-        ${currentUser?.email===a.owner ? `<button class="danger" onclick="del('${d.id}')">Sil</button>`:""}
-        ${win ? `<button onclick='openChat({id:"${d.id}"})'>💬 Mesajlaş</button>`:""}
-      </div>`;
-    });
-  });
+function renderNav(){
+  nav.innerHTML = user ?
+  `<button onclick="logout()">Çıkış</button>` :
+  `<button onclick="showLogin()">Giriş</button>
+   <button onclick="showRegister()">Üye Ol</button>`;
 }
 
-/* 👤 PROFILE */
-window.showProfile = email=>{
-  home.classList.add("hidden");
-  profile.classList.remove("hidden");
-  profile.innerHTML = `<h2>${email}</h2>`;
-};
-</script>
+window.logout=()=>auth.signOut();
 
+window.showLogin=()=>{
+authBox.innerHTML=`
+<div class="card">
+<h3>Giriş</h3>
+<input id="le" placeholder="Email">
+<input id="lp" type="password" placeholder="Şifre">
+<button onclick="login()">Giriş</button>
+</div>`;
+}
+
+window.showRegister=()=>{
+authBox.innerHTML=`
+<div class="card">
+<h3>Üye Ol</h3>
+<input id="re" placeholder="Email">
+<input id="rp" type="password" placeholder="Şifre">
+<button onclick="register()">Üye Ol</button>
+</div>`;
+}
+
+window.login=()=>signInWithEmailAndPassword(auth,le.value,lp.value);
+window.register=()=>createUserWithEmailAndPassword(auth,re.value,rp.value);
+
+function renderHome(){
+profile.classList.add("hidden");
+chat.classList.add("hidden");
+home.classList.remove("hidden");
+
+home.innerHTML = user ? `
+<div class="card">
+<h3>İlan Ekle</h3>
+<input id="name" placeholder="İlan başlığı">
+<select id="irk">
+<option>Saya</option><option>Dolapçı</option><option>Taklacı</option>
+<option>Kelebek</option><option>Posta</option>
+</select>
+<select id="cinsiyet"><option>Erkek</option><option>Dişi</option></select>
+<input id="yas" type="number" placeholder="Yaş">
+<select id="pedigree">
+<option>Yok</option><option>Var</option>
+</select>
+<select id="asi">
+<option>Aşısız</option><option>Aşılı</option>
+</select>
+<input id="price" type="number" placeholder="Başlangıç ₺">
+<input id="photo" type="file">
+<button onclick="addAuction()">Başlat</button>
+</div>`:"";
+
+home.innerHTML+=`
+<div class="card filter">
+<select id="fIrk"><option value="">Irk</option><option>Saya</option><option>Dolapçı</option><option>Taklacı</option><option>Kelebek</option><option>Posta</option></select>
+<select id="fC"><option value="">Cinsiyet</option><option>Erkek</option><option>Dişi</option></select>
+<select id="fA"><option value="">Aşı</option><option>Aşılı</option><option>Aşısız</option></select>
+<button onclick="renderList()">Filtrele</button>
+</div>
+<div id="list"></div>`;
+
+renderList();
+}
+
+window.addAuction=()=>{
+const r=new FileReader();
+r.onload=e=>{
+addDoc(collection(db,"auctions"),{
+name:name.value,irk:irk.value,cinsiyet:cinsiyet.value,
+yas:Number(yas.value),pedigree:pedigree.value,asi:asi.value,
+price:Number(price.value),photo:e.target.result,
+owner:user.email,start:Date.now(),bids:[]
+});
+};
+r.readAsDataURL(photo.files[0]);
+}
+
+function renderList(){
+const list=document.getElementById("list");
+list.innerHTML="";
+onSnapshot(collection(db,"auctions"),snap=>{
+list.innerHTML="";
+snap.forEach(d=>{
+const a=d.data();
+if(fIrk.value && a.irk!==fIrk.value)return;
+if(fC.value && a.cinsiyet!==fC.value)return;
+if(fA.value && a.asi!==fA.value)return;
+
+const last=a.bids[a.bids.length-1];
+const ended=Date.now()>a.start+86400000;
+const win=ended && last?.user===user?.email;
+
+list.innerHTML+=`
+<div class="card">
+<div class="image-box">
+<span class="owner" onclick="showProfile('${a.owner}')">@${a.owner}</span>
+<img src="${a.photo}">
+</div>
+<b>${a.name}</b>
+<p>${a.irk} • ${a.cinsiyet} • ${a.yas} yaş</p>
+<p>${a.asi} ${a.irk==="Posta"?"• Pedigree: "+a.pedigree:""}</p>
+<p>💰 ${a.price} ₺</p>
+<p>Son teklif: ${last?last.user:"Yok"}</p>
+${!ended && user && user.email!==a.owner?`<button onclick='bid("${d.id}",${JSON.stringify(a.bids)},${a.price})'>Teklif</button>`:""}
+${user?.email===a.owner?`<button class="danger" onclick="del('${d.id}')">Sil</button>`:""}
+${win?`<button onclick='openChat("${d.id}", "${a.owner}")'>💬 Mesajlaş</button>`:""}
+</div>`;
+});
+});
+}
+
+window.bid=(id,bids,price)=>{
+const v=prompt("Teklif ₺");
+if(Number(v)<=price)return alert("Daha yüksek olmalı");
+updateDoc(doc(db,"auctions",id),{
+price:Number(v),
+bids:[...bids,{user:user.email,amount:Number(v)}]
+});
+}
+
+window.del=id=>deleteDoc(doc(db,"auctions",id));
+
+window.showProfile=email=>{
+home.classList.add("hidden");
+profile.classList.remove("hidden");
+profile.innerHTML=`<div class="card"><h2>${email}</h2></div>`;
+}
+
+window.openChat=(aid,owner)=>{
+home.classList.add("hidden");
+chat.classList.remove("hidden");
+const q=query(collection(db,"messages"),where("auction","==",aid),orderBy("time"));
+onSnapshot(q,s=>{
+chat.innerHTML="<h3>Sohbet</h3>";
+s.forEach(m=>chat.innerHTML+=`<div class="card"><b>${m.data().from}</b><br>${m.data().text}</div>`);
+chat.innerHTML+=`<textarea id="msg"></textarea><button onclick="sendMsg('${aid}')">Gönder</button>`;
+});
+}
+
+window.sendMsg=id=>{
+addDoc(collection(db,"messages"),{
+auction:id,from:user.email,text:msg.value,time:Date.now()
+});
+msg.value="";
+}
+</script>
 </body>
 </html>
