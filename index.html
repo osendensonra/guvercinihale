@@ -1,171 +1,95 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Güvercin Pazarı | osendensonra</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .modal-active { display: flex !important; }
-        .pigeon-card:hover { transform: translateY(-5px); transition: all 0.3s; }
-    </style>
+<meta charset="UTF-8">
+<title>Güvercin Pazarı TR</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #fff;
+}
+header {
+    padding: 20px;
+    background: #020617;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header h1 {
+    color: #facc15;
+}
+a {
+    color: #facc15;
+    text-decoration: none;
+    margin-left: 15px;
+}
+.hero {
+    padding: 60px 20px;
+    text-align: center;
+}
+.hero h2 {
+    font-size: 36px;
+}
+.button {
+    margin-top: 20px;
+    display: inline-block;
+    padding: 15px 30px;
+    background: #facc15;
+    color: #000;
+    border-radius: 6px;
+    font-weight: bold;
+}
+section {
+    padding: 40px 20px;
+}
+.card {
+    background: #020617;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #020617;
+    font-size: 14px;
+}
+</style>
 </head>
-<body class="bg-gray-50">
+<body>
 
-    <div id="auth-modal" class="fixed inset-0 bg-black/60 hidden z-[200] items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden text-center">
-            <div class="flex border-b">
-                <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600">Giriş Yap</button>
-                <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-4 font-bold text-gray-400 hover:text-gray-600">Üye Ol</button>
-            </div>
-            <div class="p-8">
-                <form onsubmit="handleAuth(event)" class="space-y-4 text-left">
-                    <div id="name-group" class="hidden">
-                        <label class="text-xs font-bold text-gray-500 uppercase">Ad Soyad</label>
-                        <input type="text" id="auth-name" class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase">E-posta</label>
-                        <input type="email" id="auth-email" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 uppercase">Şifre</label>
-                        <input type="password" id="auth-pass" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••">
-                    </div>
-                    <button type="submit" id="auth-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-200">Giriş Yap</button>
-                </form>
-                <button onclick="toggleModal('auth-modal')" class="mt-4 text-gray-400 text-sm">Kapat</button>
-            </div>
-        </div>
+<header>
+    <h1>🕊️ Güvercin Pazarı TR</h1>
+    <nav>
+        <a href="login.html">Giriş</a>
+        <a href="register.html">Üye Ol</a>
+        <a href="auctions.html">İhaleler</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <h2>Profesyonel Güvercin İhale Platformu</h2>
+    <p>Gerçek yetiştiriciler, şeffaf ihale, 24 saatlik açık artırma sistemi.</p>
+    <a class="button" href="auctions.html">Aktif İhaleleri Gör</a>
+</div>
+
+<section>
+    <div class="card">
+        ✔️ Üyelik ile güvenli teklif sistemi
     </div>
-
-    <div id="add-modal" class="fixed inset-0 bg-black/60 hidden z-[200] items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
-            <div class="p-6 border-b bg-gray-50 flex justify-between items-center">
-                <h2 class="text-xl font-extrabold text-gray-800 italic"><i class="fas fa-plus text-blue-600"></i> Yeni İlan Ekle</h2>
-                <button onclick="toggleModal('add-modal')" class="text-gray-400 hover:text-black"><i class="fas fa-times"></i></button>
-            </div>
-            <form onsubmit="saveAuction(event)" class="p-6 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2 text-center bg-blue-50 p-2 rounded-lg text-xs text-blue-600 font-bold mb-2">Sorumluluk satıcıya aittir.</div>
-                    <div class="col-span-2">
-                        <label class="text-xs font-bold text-gray-500">İLAN BAŞLIĞI</label>
-                        <input type="text" id="p-title" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none" placeholder="Örn: 2024 Taklacı Gök">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500">BAŞLANGIÇ FİYATI (₺)</label>
-                        <input type="number" id="p-price" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500">KÜNYE NO</label>
-                        <input type="text" id="p-ring" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none" placeholder="TR-2026-X">
-                    </div>
-                    <div class="col-span-2">
-                        <label class="text-xs font-bold text-gray-500">FOTOĞRAF URL (Link)</label>
-                        <input type="url" id="p-img" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none" placeholder="https://resimlinki.com/kus.jpg">
-                    </div>
-                </div>
-                <button type="submit" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all">MEZATI BAŞLAT</button>
-            </form>
-        </div>
+    <div class="card">
+        ✔️ 24 saatlik otomatik ihale süresi
     </div>
+    <div class="card">
+        ✔️ Profesyonel ve mobil uyumlu yapı
+    </div>
+</section>
 
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-black text-blue-600 italic">GÜVERCİN MEZATI</h1>
-            <div id="nav-actions" class="flex gap-3">
-                <button onclick="checkAuthAndOpenAdd()" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-orange-600 transition-all">
-                    <i class="fas fa-plus"></i> İlan Ver
-                </button>
-                <div id="auth-status">
-                    <button onclick="toggleModal('auth-modal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">Giriş Yap</button>
-                </div>
-            </div>
-        </div>
-    </header>
+<footer>
+    © 2026 Güvercin Pazarı TR – Tüm Hakları Saklıdır
+</footer>
 
-    <main class="max-w-6xl mx-auto px-4 py-10">
-        <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
-            <i class="fas fa-fire text-orange-500"></i> Aktif İhaleler
-        </h2>
-        <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
-    </main> <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
-<script>
-  // Firebase Yapılandırması (Buradaki bilgileri Firebase Console'dan alacaksın)
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  // Firebase'i başlat
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-</script>
-
-    <script>
-        let user = JSON.parse(localStorage.getItem('user')) || null;
-        let auctions = JSON.parse(localStorage.getItem('auctions')) || [];
-
-        // Başlangıç Ayarları
-        window.onload = () => {
-            renderAuctions();
-            updateHeader();
-        };
-
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('modal-active');
-        }
-
-        function switchTab(type) {
-            const ng = document.getElementById('name-group');
-            const ab = document.getElementById('auth-btn');
-            const tl = document.getElementById('tab-login');
-            const tr = document.getElementById('tab-register');
-            if(type === 'login') {
-                ng.classList.add('hidden'); ab.innerText="Giriş Yap";
-                tl.classList.add('border-blue-600','text-blue-600'); tr.classList.remove('border-blue-600','text-blue-600');
-            } else {
-                ng.classList.remove('hidden'); ab.innerText="Üye Ol";
-                tr.classList.add('border-blue-600','text-blue-600'); tl.classList.remove('border-blue-600','text-blue-600');
-            }
-        }
-
-        function handleAuth(e) {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const name = document.getElementById('auth-name').value;
-            user = { name: name || email.split('@')[0], email: email };
-            localStorage.setItem('user', JSON.stringify(user));
-            updateHeader();
-            toggleModal('auth-modal');
-        }
-
-        function updateHeader() {
-            if(user) {
-                document.getElementById('auth-status').innerHTML = `
-                    <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg border">
-                        <span class="text-xs font-bold text-gray-700 underline">${user.name}</span>
-                        <button onclick="logout()" class="text-red-500 text-xs"><i class="fas fa-sign-out-alt"></i></button>
-                    </div>`;
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('user');
-            location.reload();
-        }
-
-        function checkAuthAndOpenAdd() {
-            if(!user) { alert("İlan vermek için giriş yapmalısınız!"); toggleModal('auth-modal'); }
+</body>
+</html>
