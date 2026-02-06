@@ -3,175 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Güvercin Mezatı | osendensonra</title>
+    <title>Güvercin Pazarı | osendensonra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .bid-animate { animation: scaleUp 0.3s ease-out; }
-        @keyframes scaleUp { 0% { transform: scale(1); } 50% { transform: scale(1.05); color: #2563eb; } 100% { transform: scale(1); } }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .modal-active { display: flex !important; }
+        .pigeon-card:hover { transform: translateY(-5px); transition: all 0.3s; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
 
-    <div id="auth-modal" class="fixed inset-0 bg-black/60 hidden z-[100] items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-            <div class="flex border-b text-center">
+    <div id="auth-modal" class="fixed inset-0 bg-black/60 hidden z-[200] items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden text-center">
+            <div class="flex border-b">
                 <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600">Giriş Yap</button>
                 <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-4 font-bold text-gray-400 hover:text-gray-600">Üye Ol</button>
             </div>
             <div class="p-8">
-                <form id="auth-form" onsubmit="handleAuth(event)">
-                    <div class="space-y-4">
-                        <div id="name-group" class="hidden">
-                            <label class="block text-sm font-medium text-gray-700">Ad Soyad</label>
-                            <input type="text" id="auth-name" class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">E-posta</label>
-                            <input type="email" id="auth-email" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="ornek@mail.com">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Şifre</label>
-                            <input type="password" id="auth-pass" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
-                        </div>
-                        <button type="submit" id="auth-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all">Giriş Yap</button>
+                <form onsubmit="handleAuth(event)" class="space-y-4 text-left">
+                    <div id="name-group" class="hidden">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Ad Soyad</label>
+                        <input type="text" id="auth-name" class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">E-posta</label>
+                        <input type="email" id="auth-email" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Şifre</label>
+                        <input type="password" id="auth-pass" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••">
+                    </div>
+                    <button type="submit" id="auth-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-200">Giriş Yap</button>
                 </form>
-                <button onclick="toggleModal()" class="w-full mt-4 text-gray-400 text-sm hover:underline">Vazgeç</button>
+                <button onclick="toggleModal('auth-modal')" class="mt-4 text-gray-400 text-sm">Kapat</button>
             </div>
+        </div>
+    </div>
+
+    <div id="add-modal" class="fixed inset-0 bg-black/60 hidden z-[200] items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b bg-gray-50 flex justify-between items-center">
+                <h2 class="text-xl font-extrabold text-gray-800 italic"><i class="fas fa-plus text-blue-600"></i> Yeni İlan Ekle</h2>
+                <button onclick="toggleModal('add-modal')" class="text-gray-400 hover:text-black"><i class="fas fa-times"></i></button>
+            </div>
+            <form onsubmit="saveAuction(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2 text-center bg-blue-50 p-2 rounded-lg text-xs text-blue-600 font-bold mb-2">Sorumluluk satıcıya aittir.</div>
+                    <div class="col-span-2">
+                        <label class="text-xs font-bold text-gray-500">İLAN BAŞLIĞI</label>
+                        <input type="text" id="p-title" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none" placeholder="Örn: 2024 Taklacı Gök">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500">BAŞLANGIÇ FİYATI (₺)</label>
+                        <input type="number" id="p-price" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500">KÜNYE NO</label>
+                        <input type="text" id="p-ring" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none" placeholder="TR-2026-X">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-xs font-bold text-gray-500">FOTOĞRAF URL (Link)</label>
+                        <input type="url" id="p-img" required class="w-full mt-1 p-3 border rounded-xl bg-gray-50 outline-none" placeholder="https://resimlinki.com/kus.jpg">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all">MEZATI BAŞLAT</button>
+            </form>
         </div>
     </div>
 
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl md:text-2xl font-extrabold text-blue-600 flex items-center gap-2">
-                <i class="fas fa-dove"></i> MEZAT
-            </h1>
-            <div class="flex items-center gap-4">
-                <div id="timer-badge" class="hidden md:flex bg-red-100 text-red-600 px-3 py-1.5 rounded-full font-mono font-bold items-center gap-2">
-                    <i class="fas fa-clock"></i> <span id="timer">01:00:00</span>
-                </div>
+            <h1 class="text-2xl font-black text-blue-600 italic">GÜVERCİN MEZATI</h1>
+            <div id="nav-actions" class="flex gap-3">
+                <button onclick="checkAuthAndOpenAdd()" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-orange-600 transition-all">
+                    <i class="fas fa-plus"></i> İlan Ver
+                </button>
                 <div id="auth-status">
-                    <button onclick="toggleModal()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold text-sm hover:bg-blue-700">Giriş Yap</button>
+                    <button onclick="toggleModal('auth-modal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">Giriş Yap</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-2xl overflow-hidden shadow-md">
-                <img src="https://images.unsplash.com/photo-1509112756314-34a0badb29d4?auto=format&fit=crop&q=80&w=1000" class="w-full h-[400px] object-cover">
-                <div class="p-6">
-                    <h2 class="text-3xl font-extrabold text-gray-800">Mavi Çakmaklı Oyunlu</h2>
-                    <p class="text-gray-500 mt-2">Kuşun performansı ve soy ağacı tescillidir. Ankara içi elden teslim, diğer illere gönderim yapılır.</p>
-                </div>
+    <main class="max-w-6xl mx-auto px-4 py-10">
+        <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
+            <i class="fas fa-fire text-orange-500"></i> Aktif İhaleler
+        </h2>
+        <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             </div>
-        </div>
-
-        <div class="space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-xl border-t-4 border-blue-600">
-                <div class="text-center mb-6">
-                    <span class="text-gray-400 uppercase text-xs font-bold">GÜNCEL FİYAT</span>
-                    <div id="price-display" class="text-5xl font-black text-blue-700 mt-2">1.250 ₺</div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 mb-6">
-                    <button onclick="addBid(50)" class="bg-gray-50 border py-3 rounded-xl font-bold hover:bg-gray-100">+50 ₺</button>
-                    <button onclick="addBid(100)" class="bg-gray-50 border py-3 rounded-xl font-bold hover:bg-gray-100">+100 ₺</button>
-                    <button onclick="addBid(250)" class="bg-blue-600 text-white py-4 rounded-xl font-bold col-span-2 shadow-lg flex justify-center items-center gap-2 active:scale-95 uppercase">
-                        <i class="fas fa-gavel"></i> Teklif Ver
-                    </button>
-                </div>
-
-                <div class="border-t pt-4">
-                    <h3 class="font-bold text-gray-700 mb-4 tracking-tight"><i class="fas fa-history text-blue-500"></i> Teklif Geçmişi</h3>
-                    <div id="bid-history" class="space-y-3 max-h-60 overflow-y-auto pr-2"></div>
-                </div>
-            </div>
-        </div>
     </main>
 
     <script>
-        let currentPrice = 1250;
-        let timeLeft = 3600;
-        let user = null; // Giriş yapan kullanıcı bilgisi
+        let user = JSON.parse(localStorage.getItem('user')) || null;
+        let auctions = JSON.parse(localStorage.getItem('auctions')) || [];
 
-        // MODAL KONTROLÜ
-        function toggleModal() {
-            document.getElementById('auth-modal').classList.toggle('modal-active');
+        // Başlangıç Ayarları
+        window.onload = () => {
+            renderAuctions();
+            updateHeader();
+        };
+
+        function toggleModal(id) {
+            document.getElementById(id).classList.toggle('modal-active');
         }
 
         function switchTab(type) {
-            const nameGroup = document.getElementById('name-group');
-            const authBtn = document.getElementById('auth-btn');
-            const tLogin = document.getElementById('tab-login');
-            const tReg = document.getElementById('tab-register');
-
+            const ng = document.getElementById('name-group');
+            const ab = document.getElementById('auth-btn');
+            const tl = document.getElementById('tab-login');
+            const tr = document.getElementById('tab-register');
             if(type === 'login') {
-                nameGroup.classList.add('hidden');
-                authBtn.innerText = "Giriş Yap";
-                tLogin.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
-                tReg.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
+                ng.classList.add('hidden'); ab.innerText="Giriş Yap";
+                tl.classList.add('border-blue-600','text-blue-600'); tr.classList.remove('border-blue-600','text-blue-600');
             } else {
-                nameGroup.classList.remove('hidden');
-                authBtn.innerText = "Üye Ol";
-                tReg.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
-                tLogin.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
+                ng.classList.remove('hidden'); ab.innerText="Üye Ol";
+                tr.classList.add('border-blue-600','text-blue-600'); tl.classList.remove('border-blue-600','text-blue-600');
             }
         }
 
-        // GİRİŞ YAPMA SİMÜLASYONU
         function handleAuth(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
-            user = email.split('@')[0]; // E-postanın başını isim olarak alalım
-            
-            document.getElementById('auth-status').innerHTML = `
-                <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
-                    <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs italic">OSN</div>
-                    <span class="text-sm font-bold text-gray-700">${user}</span>
-                </div>
-            `;
-            toggleModal();
+            const name = document.getElementById('auth-name').value;
+            user = { name: name || email.split('@')[0], email: email };
+            localStorage.setItem('user', JSON.stringify(user));
+            updateHeader();
+            toggleModal('auth-modal');
         }
 
-        // TEKLİF VERME (Kısıtlamalı)
-        function addBid(amount) {
-            if(!user) {
-                alert("Önce giriş yapmalısınız!");
-                toggleModal();
-                return;
-            }
-
-            currentPrice += amount;
-            document.getElementById('price-display').innerText = currentPrice.toLocaleString('tr-TR') + " ₺";
-            
-            const history = document.getElementById('bid-history');
-            const item = document.createElement('div');
-            item.className = "flex justify-between items-center text-sm bg-blue-50 p-3 rounded-lg border border-blue-100 bid-animate";
-            item.innerHTML = `<b>${user}</b> <span class="text-blue-700 font-bold">${currentPrice} ₺</span>`;
-            history.prepend(item);
-
-            if(timeLeft < 60) {
-                timeLeft += 120;
-                alert("Süre 2 dakika uzatıldı!");
+        function updateHeader() {
+            if(user) {
+                document.getElementById('auth-status').innerHTML = `
+                    <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg border">
+                        <span class="text-xs font-bold text-gray-700 underline">${user.name}</span>
+                        <button onclick="logout()" class="text-red-500 text-xs"><i class="fas fa-sign-out-alt"></i></button>
+                    </div>`;
             }
         }
 
-        // SAYAÇ
-        setInterval(() => {
-            if(timeLeft > 0) {
-                timeLeft--;
-                const h = Math.floor(timeLeft / 3600);
-                const m = Math.floor((timeLeft % 3600) / 60);
-                const s = timeLeft % 60;
-                document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            }
-        }, 1000);
-    </script>
-</body>
-</html>
+        function logout() {
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        function checkAuthAndOpenAdd() {
+            if(!user) { alert("İlan vermek için giriş yapmalısınız!"); toggleModal('auth-modal'); }
