@@ -3,31 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuvercinIhale | Canlı</title>
+    <title>İhale Sistemi</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-200 p-5">
 
-    <nav class="bg-blue-900 p-4 text-white flex justify-between items-center shadow-lg">
-        <h1 onclick="location.reload()" class="font-bold text-lg cursor-pointer">GUVERCİNİHALE</h1>
-        <div class="flex space-x-2">
-            <button onclick="sayfaAc('home')" class="text-xs border border-white/30 px-3 py-1 rounded-lg">İhaleler</button>
-            <button onclick="adminKontrol()" class="text-xs bg-red-600 px-3 py-1 rounded-lg">Yönetim</button>
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-6 border-t-8 border-blue-900">
+        <h1 class="text-2xl font-black text-center mb-6">GÜVERCİN İHALE</h1>
+        
+        <div class="bg-blue-50 p-4 rounded-xl mb-6 text-center">
+            <p class="text-sm text-gray-500 font-bold uppercase">Mevcut Fiyat</p>
+            <p id="fiyatGosterge" class="text-4xl font-black text-blue-900">1.500 TL</p>
         </div>
-    </nav>
 
-    <div id="home" class="p-4 container mx-auto max-w-md">
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border">
-            <img src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=400" class="w-full h-48 object-cover">
-            <div class="p-6">
-                <h3 class="font-black text-xl uppercase tracking-tighter">Mavi Şebap (Erkek)</h3>
-                <div class="flex justify-between items-center mt-4">
-                    <div>
-                        <p class="text-gray-400 text-[10px] font-bold uppercase">GÜNCEL FİYAT</p>
-                        <p id="fiyat" class="text-3xl font-black text-blue-800">1.500 TL</p>
-                    </div>
-                    <button onclick="teklifVer()" class="bg-blue-800 text-white px-6 py-3 rounded-xl font-bold shadow-lg active:scale-95">TEKLİF VER</button>
-                </div>
+        <button onclick="teklifAl()" class="w-full bg-blue-800 text-white py-5 rounded-2xl font-black text-xl shadow-lg active:bg-blue-700 mb-4">
+            TEKLİF VER
+        </button>
 
-                <div id="mesajlar" class="mt-6 bg-gray-50 rounded-xl p-3 h-40 overflow-y-auto text-sm space-y-2 border">
-                    <div class="text-gray-400 italic text-center text-xs">Henüz mesaj yok. İlk teklifi siz
+        <button onclick="adminPaneliniAc()" class="w-full bg-gray-100 text-gray-400 py-2 rounded-xl text-xs font-bold uppercase">
+            Yönetim Paneli
+        </div>
+
+        <div id="mesajKutusu" class="mt-6 space-y-2 max-h-40 overflow-auto">
+            </div>
+    </div>
+
+    <script>
+        // Hata olup olmadığını anlamak için ilk çalıştırmada mesaj verelim
+        console.log("Sistem yüklendi");
+
+        function teklifAl() {
+            try {
+                let isim = prompt("Adınız nedir?");
+                if (isim == null || isim == "") return;
+
+                let teklif = prompt("Teklifiniz kaç TL?");
+                if (teklif == null || teklif == "") return;
+
+                // Fiyatı ekrana yazdır
+                document.getElementById('fiyatGosterge').innerText = teklif + " TL";
+
+                // Listeye ekle
+                let liste = document.getElementById('mesajKutusu');
+                liste.innerHTML = '<div class="p-2 bg-green-50 border-l-4 border-green-500 text-sm"><b>' + isim + ':</b> ' + teklif + ' TL teklif verdi!</div>' + liste.innerHTML;
+                
+                alert("Teklifiniz başarıyla eklendi!");
+            } catch (hata) {
+                alert("Bir hata oluştu: " + hata.message);
+            }
+        }
+
+        function adminPaneliniAc() {
+            let sifre = prompt("Admin Şifresi:");
+            if (sifre === "guvercin123") {
+                alert("Hoş geldiniz osendensonra! Sistem yönetim modunda.");
+            } else {
+                alert("Şifre yanlış!");
+            }
+        }
+    </script>
+
+</body>
+</html>
