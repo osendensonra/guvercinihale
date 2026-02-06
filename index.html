@@ -1,93 +1,177 @@
-<div id="auth-modal" class="fixed inset-0 bg-black/50 hidden z-[100] flex items-center justify-center backdrop-blur-sm">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-        <div class="flex border-b">
-            <button onclick="switchTab('login')" id="login-tab" class="flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600">Giriş Yap</button>
-            <button onclick="switchTab('signup')" id="signup-tab" class="flex-1 py-4 font-bold text-gray-400 hover:text-gray-600">Kayıt Ol</button>
-        </div>
-        
-        <div class="p-8">
-            <form id="auth-form" onsubmit="handleAuth(event)">
-                <div class="space-y-4">
-                    <div id="name-field" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700">Ad Soyad</label>
-                        <input type="text" class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Güvercin Mezatı | osendensonra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .bid-animate { animation: scaleUp 0.3s ease-out; }
+        @keyframes scaleUp { 0% { transform: scale(1); } 50% { transform: scale(1.05); color: #2563eb; } 100% { transform: scale(1); } }
+        .modal-active { display: flex !important; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="auth-modal" class="fixed inset-0 bg-black/60 hidden z-[100] items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex border-b text-center">
+                <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600">Giriş Yap</button>
+                <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-4 font-bold text-gray-400 hover:text-gray-600">Üye Ol</button>
+            </div>
+            <div class="p-8">
+                <form id="auth-form" onsubmit="handleAuth(event)">
+                    <div class="space-y-4">
+                        <div id="name-group" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700">Ad Soyad</label>
+                            <input type="text" id="auth-name" class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">E-posta</label>
+                            <input type="email" id="auth-email" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="ornek@mail.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Şifre</label>
+                            <input type="password" id="auth-pass" required class="w-full mt-1 p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
+                        </div>
+                        <button type="submit" id="auth-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all">Giriş Yap</button>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">E-posta</label>
-                        <input type="email" required class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ornek@mail.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Şifre</label>
-                        <input type="password" required class="w-full mt-1 p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••">
-                    </div>
-                    <button type="submit" id="auth-submit-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all">Giriş Yap</button>
-                </div>
-            </form>
-            <button onclick="closeModal()" class="w-full mt-4 text-gray-400 text-sm hover:underline">Vazgeç</button>
+                </form>
+                <button onclick="toggleModal()" class="w-full mt-4 text-gray-400 text-sm hover:underline">Vazgeç</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="user-area" class="flex items-center gap-4">
-    <button onclick="openModal('login')" class="text-blue-600 font-bold text-sm border border-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50">Giriş Yap</button>
-</div>
-
-<script>
-    let isLoggedIn = false;
-    let currentUser = null;
-
-    function openModal(tab) {
-        document.getElementById('auth-modal').classList.remove('hidden');
-        switchTab(tab);
-    }
-
-    function closeModal() {
-        document.getElementById('auth-modal').classList.add('hidden');
-    }
-
-    function switchTab(tab) {
-        const nameField = document.getElementById('name-field');
-        const submitBtn = document.getElementById('auth-submit-btn');
-        const loginTab = document.getElementById('login-tab');
-        const signupTab = document.getElementById('signup-tab');
-
-        if (tab === 'login') {
-            nameField.classList.add('hidden');
-            submitBtn.innerText = "Giriş Yap";
-            loginTab.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
-            signupTab.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
-        } else {
-            nameField.classList.remove('hidden');
-            submitBtn.innerText = "Hesap Oluştur";
-            signupTab.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
-            loginTab.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
-        }
-    }
-
-    function handleAuth(e) {
-        e.preventDefault();
-        // Simülasyon: Gerçekte burası Firebase veya API'ye bağlanacak
-        isLoggedIn = true;
-        currentUser = "osendensonra";
-        
-        document.getElementById('user-area').innerHTML = `
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">O</div>
-                <span class="font-semibold text-gray-700">${currentUser}</span>
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-extrabold text-blue-600 flex items-center gap-2">
+                <i class="fas fa-dove"></i> MEZAT
+            </h1>
+            <div class="flex items-center gap-4">
+                <div id="timer-badge" class="hidden md:flex bg-red-100 text-red-600 px-3 py-1.5 rounded-full font-mono font-bold items-center gap-2">
+                    <i class="fas fa-clock"></i> <span id="timer">01:00:00</span>
+                </div>
+                <div id="auth-status">
+                    <button onclick="toggleModal()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold text-sm hover:bg-blue-700">Giriş Yap</button>
+                </div>
             </div>
-        `;
-        closeModal();
-        alert("Başarıyla giriş yapıldı!");
-    }
+        </div>
+    </header>
 
-    // Mevcut addBid fonksiyonunu güncelle (Giriş kontrolü ekle)
-    const originalAddBid = addBid;
-    addBid = function(amount) {
-        if (!isLoggedIn) {
-            alert("Teklif vermek için önce giriş yapmalısınız!");
-            openModal('login');
-            return;
+    <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-md">
+                <img src="https://images.unsplash.com/photo-1509112756314-34a0badb29d4?auto=format&fit=crop&q=80&w=1000" class="w-full h-[400px] object-cover">
+                <div class="p-6">
+                    <h2 class="text-3xl font-extrabold text-gray-800">Mavi Çakmaklı Oyunlu</h2>
+                    <p class="text-gray-500 mt-2">Kuşun performansı ve soy ağacı tescillidir. Ankara içi elden teslim, diğer illere gönderim yapılır.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-xl border-t-4 border-blue-600">
+                <div class="text-center mb-6">
+                    <span class="text-gray-400 uppercase text-xs font-bold">GÜNCEL FİYAT</span>
+                    <div id="price-display" class="text-5xl font-black text-blue-700 mt-2">1.250 ₺</div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="addBid(50)" class="bg-gray-50 border py-3 rounded-xl font-bold hover:bg-gray-100">+50 ₺</button>
+                    <button onclick="addBid(100)" class="bg-gray-50 border py-3 rounded-xl font-bold hover:bg-gray-100">+100 ₺</button>
+                    <button onclick="addBid(250)" class="bg-blue-600 text-white py-4 rounded-xl font-bold col-span-2 shadow-lg flex justify-center items-center gap-2 active:scale-95 uppercase">
+                        <i class="fas fa-gavel"></i> Teklif Ver
+                    </button>
+                </div>
+
+                <div class="border-t pt-4">
+                    <h3 class="font-bold text-gray-700 mb-4 tracking-tight"><i class="fas fa-history text-blue-500"></i> Teklif Geçmişi</h3>
+                    <div id="bid-history" class="space-y-3 max-h-60 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentPrice = 1250;
+        let timeLeft = 3600;
+        let user = null; // Giriş yapan kullanıcı bilgisi
+
+        // MODAL KONTROLÜ
+        function toggleModal() {
+            document.getElementById('auth-modal').classList.toggle('modal-active');
         }
-        originalAddBid(amount);
-    };
-</script>
+
+        function switchTab(type) {
+            const nameGroup = document.getElementById('name-group');
+            const authBtn = document.getElementById('auth-btn');
+            const tLogin = document.getElementById('tab-login');
+            const tReg = document.getElementById('tab-register');
+
+            if(type === 'login') {
+                nameGroup.classList.add('hidden');
+                authBtn.innerText = "Giriş Yap";
+                tLogin.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
+                tReg.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
+            } else {
+                nameGroup.classList.remove('hidden');
+                authBtn.innerText = "Üye Ol";
+                tReg.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
+                tLogin.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
+            }
+        }
+
+        // GİRİŞ YAPMA SİMÜLASYONU
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            user = email.split('@')[0]; // E-postanın başını isim olarak alalım
+            
+            document.getElementById('auth-status').innerHTML = `
+                <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs italic">OSN</div>
+                    <span class="text-sm font-bold text-gray-700">${user}</span>
+                </div>
+            `;
+            toggleModal();
+        }
+
+        // TEKLİF VERME (Kısıtlamalı)
+        function addBid(amount) {
+            if(!user) {
+                alert("Önce giriş yapmalısınız!");
+                toggleModal();
+                return;
+            }
+
+            currentPrice += amount;
+            document.getElementById('price-display').innerText = currentPrice.toLocaleString('tr-TR') + " ₺";
+            
+            const history = document.getElementById('bid-history');
+            const item = document.createElement('div');
+            item.className = "flex justify-between items-center text-sm bg-blue-50 p-3 rounded-lg border border-blue-100 bid-animate";
+            item.innerHTML = `<b>${user}</b> <span class="text-blue-700 font-bold">${currentPrice} ₺</span>`;
+            history.prepend(item);
+
+            if(timeLeft < 60) {
+                timeLeft += 120;
+                alert("Süre 2 dakika uzatıldı!");
+            }
+        }
+
+        // SAYAÇ
+        setInterval(() => {
+            if(timeLeft > 0) {
+                timeLeft--;
+                const h = Math.floor(timeLeft / 3600);
+                const m = Math.floor((timeLeft % 3600) / 60);
+                const s = timeLeft % 60;
+                document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
