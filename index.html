@@ -96,84 +96,7 @@
     </main>
 
     <script>
-        let currentPrice = 1250;
-        let timeLeft = 3600;
-        let user = null; // Giriş yapan kullanıcı bilgisi
-
-        // MODAL KONTROLÜ
-        function toggleModal() {
-            document.getElementById('auth-modal').classList.toggle('modal-active');
-        }
-
-        function switchTab(type) {
-            const nameGroup = document.getElementById('name-group');
-            const authBtn = document.getElementById('auth-btn');
-            const tLogin = document.getElementById('tab-login');
-            const tReg = document.getElementById('tab-register');
-
-            if(type === 'login') {
-                nameGroup.classList.add('hidden');
-                authBtn.innerText = "Giriş Yap";
-                tLogin.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
-                tReg.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
-            } else {
-                nameGroup.classList.remove('hidden');
-                authBtn.innerText = "Üye Ol";
-                tReg.className = "flex-1 py-4 font-bold text-blue-600 border-b-2 border-blue-600";
-                tLogin.className = "flex-1 py-4 font-bold text-gray-400 hover:text-gray-600";
-            }
-        }
-
-        // GİRİŞ YAPMA SİMÜLASYONU
-        function handleAuth(e) {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            user = email.split('@')[0]; // E-postanın başını isim olarak alalım
-            
-            document.getElementById('auth-status').innerHTML = `
-                <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
-                    <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs italic">OSN</div>
-                    <span class="text-sm font-bold text-gray-700">${user}</span>
-                </div>
-            `;
-            toggleModal();
-        }
-
-        // TEKLİF VERME (Kısıtlamalı)
-        function addBid(amount) {
-            if(!user) {
-                alert("Önce giriş yapmalısınız!");
-                toggleModal();
-                return;
-            }
-
-            currentPrice += amount;
-            document.getElementById('price-display').innerText = currentPrice.toLocaleString('tr-TR') + " ₺";
-            
-            const history = document.getElementById('bid-history');
-            const item = document.createElement('div');
-            item.className = "flex justify-between items-center text-sm bg-blue-50 p-3 rounded-lg border border-blue-100 bid-animate";
-            item.innerHTML = `<b>${user}</b> <span class="text-blue-700 font-bold">${currentPrice} ₺</span>`;
-            history.prepend(item);
-
-            if(timeLeft < 60) {
-                timeLeft += 120;
-                alert("Süre 2 dakika uzatıldı!");
-            }
-        }
-
-        // SAYAÇ
-        setInterval(() => {
-            if(timeLeft > 0) {
-                timeLeft--;
-                const h = Math.floor(timeLeft / 3600);
-                const m = Math.floor((timeLeft % 3600) / 60);
-                const s = timeLeft % 60;
-                document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            }
-        }, 1000);
-    </script>
-    <script>
+        <script>
     let currentPrice = 1250;
     let timeLeft = 3600;
     let user = null; // Başlangıçta kullanıcı yok
@@ -287,5 +210,6 @@
         }
     }, 1000);
 </script>
+    </script>
 </body>
 </html>
