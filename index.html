@@ -47,157 +47,127 @@ img{width:100%;border-radius:6px;margin-bottom:8px}
 <h3>Giriş</h3>
 <input id="loginUser" placeholder="Kullanıcı adı">
 <input id="loginPass" type="password" placeholder="Şifre">
-<button onclick="login()">Giriş Yap</button>
+<button onclick="loginUserFunc()">Giriş Yap</button>
 </div>
 
 <div id="register" class="card hidden">
 <h3>Üye Ol</h3>
 <input id="regUser" placeholder="Kullanıcı adı">
 <input id="regPass" type="password" placeholder="Şifre">
-<button onclick="register()">Üye Ol</button>
+<button onclick="registerUser()">Üye Ol</button>
 </div>
 </div>
 
 <script>
-let users=JSON.parse(localStorage.getItem("users"))||[];
-let auctions=JSON.parse(localStorage.getItem("auctions"))||[];
-let user=localStorage.getItem("user");
+/* 🔑 DOM REFERANSLARI (KRİTİK) */
+const loginBox = document.getElementById("login");
+const registerBox = document.getElementById("register");
+const home = document.getElementById("home");
+const profile = document.getElementById("profile");
+const nav = document.getElementById("nav");
 
-const home=document.getElementById("home");
-const profile=document.getElementById("profile");
-const nav=document.getElementById("nav");
+/* 💾 VERİLER */
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let auctions = JSON.parse(localStorage.getItem("auctions")) || [];
+let currentUser = localStorage.getItem("user");
 
+/* 🔝 NAV */
 function renderNav(){
-nav.innerHTML=user?
-`<button onclick="showHome()">Ana Sayfa</button>
- <button onclick="showProfile('${user}')">Profilim</button>
- <button onclick="logout()">Çıkış</button>`
-:
-`<button onclick="toggle('login')">Giriş</button>
- <button onclick="toggle('register')">Üye Ol</button>`;
+  nav.innerHTML = currentUser ?
+  `<button onclick="showHome()">Ana Sayfa</button>
+   <button onclick="showProfile('${currentUser}')">Profilim</button>
+   <button onclick="logout()">Çıkış</button>`
+  :
+  `<button onclick="toggleBox('login')">Giriş</button>
+   <button onclick="toggleBox('register')">Üye Ol</button>`;
 }
 renderNav();
 
-function toggle(id){
-login.classList.add("hidden");
-register.classList.add("hidden");
-document.getElementById(id).classList.toggle("hidden");
+function toggleBox(id){
+  loginBox.classList.add("hidden");
+  registerBox.classList.add("hidden");
+  document.getElementById(id).classList.toggle("hidden");
 }
 
 function logout(){
-localStorage.removeItem("user");
-location.reload();
+  localStorage.removeItem("user");
+  location.reload();
 }
 
-function register(){
-if(!regUser.value||!regPass.value)return alert("Eksik bilgi");
-if(users.find(x=>x.username===regUser.value))return alert("Kullanıcı var");
-users.push({username:regUser.value,password:regPass.value});
-localStorage.setItem("users",JSON.stringify(users));
-alert("Üyelik tamam");
+/* 👤 ÜYELİK */
+function registerUser(){
+  if(!regUser.value || !regPass.value) return alert("Eksik bilgi");
+  if(users.find(u=>u.username===regUser.value)) return alert("Kullanıcı var");
+  users.push({username:regUser.value,password:regPass.value});
+  localStorage.setItem("users",JSON.stringify(users));
+  alert("Üyelik başarılı");
 }
 
-function login(){
-const f=users.find(x=>x.username===loginUser.value&&x.password===loginPass.value);
-if(!f)return alert("Hatalı");
-localStorage.setItem("user",loginUser.value);
-location.reload();
+function loginUserFunc(){
+  const u = users.find(x=>x.username===loginUser.value && x.password===loginPass.value);
+  if(!u) return alert("Hatalı giriş");
+  localStorage.setItem("user",loginUser.value);
+  location.reload();
 }
 
+/* 📄 SAYFALAR */
 function showHome(){
-profile.classList.add("hidden");
-home.classList.remove("hidden");
-renderHome();
+  profile.classList.add("hidden");
+  home.classList.remove("hidden");
+  renderHome();
 }
 
 function showProfile(username){
-home.classList.add("hidden");
-profile.classList.remove("hidden");
+  home.classList.add("hidden");
+  profile.classList.remove("hidden");
 
-let userAuctions=auctions.filter(a=>a.owner===username);
-
-profile.innerHTML=`
-<h2>👤 ${username}</h2>
-<h3>🕊️ Açtığı İlanlar</h3>
-${userAuctions.length
-? userAuctions.map(a=>`<div class="card">${a.name} - ${a.price} ₺</div>`).join("")
-: "İlan yok"}
-`;
+  let list = auctions.filter(a=>a.owner===username);
+  profile.innerHTML = `
+  <h2>👤 ${username}</h2>
+  <h3>🕊️ Açtığı İlanlar</h3>
+  ${list.length ? list.map(a=>`<div class="card">${a.name} - ${a.price} ₺</div>`).join("") : "İlan yok"}
+  `;
 }
 
+/* ➕ İLAN */
 function addAuction(){
-const n=name.value,p=price.value,f=photo.files[0];
-if(!n||!p||!f)return alert("Eksik");
-const r=new FileReader();
-r.onload=e=>{
-auctions.push({
-id:Date.now(),
-name:n,
-price:Number(p),
-photo:e.target.result,
-owner:user,
-start:Date.now(),
-bids:[]
-});
-localStorage.setItem("auctions",JSON.stringify(auctions));
-renderHome();
-};
-r.readAsDataURL(f);
+  const n = name.value;
+  const p = price.value;
+  const f = photo.files[0];
+  if(!n || !p || !f) return alert("Eksik bilgi");
+
+  const r = new FileReader();
+  r.onload = e => {
+    auctions.push({
+      id:Date.now(),
+      name:n,
+      price:Number(p),
+      photo:e.target.result,
+      owner:currentUser,
+      start:Date.now(),
+      bids:[]
+    });
+    localStorage.setItem("auctions",JSON.stringify(auctions));
+    renderHome();
+  };
+  r.readAsDataURL(f);
 }
 
+/* 💰 TEKLİF */
 function bid(id){
-if(!user)return alert("Giriş yap");
-const a=auctions.find(x=>x.id===id);
-if(Date.now()>a.start+86400000)return alert("İhale bitti");
-const amt=prompt("Teklif ₺");
-if(!amt)return;
-a.bids.push({user,amount:Number(amt)});
-a.price=Number(amt);
-localStorage.setItem("auctions",JSON.stringify(auctions));
-renderHome();
+  if(!currentUser) return alert("Giriş yapmalısın");
+  const a = auctions.find(x=>x.id===id);
+  if(Date.now()>a.start+86400000) return alert("İhale bitti");
+  const amt = prompt("Teklif ₺");
+  if(!amt) return;
+  a.bids.push({user:currentUser,amount:Number(amt)});
+  a.price = Number(amt);
+  localStorage.setItem("auctions",JSON.stringify(auctions));
+  renderHome();
 }
 
+/* 🗑️ SİL */
 function deleteAuction(id){
-if(!confirm("İlan silinsin mi?"))return;
-auctions=auctions.filter(a=>a.id!==id);
-localStorage.setItem("auctions",JSON.stringify(auctions));
-renderHome();
-}
-
-function renderHome(){
-home.innerHTML=`
-${user?`
-<div class="card">
-<h3>➕ Güvercin Ekle</h3>
-<input id="name" placeholder="Güvercin adı">
-<input id="price" type="number" placeholder="Başlangıç ₺">
-<input id="photo" type="file" accept="image/*">
-<button onclick="addAuction()">İhaleyi Başlat</button>
-</div>`:""}
-<h3>İlanlar</h3>`;
-
-auctions.forEach(a=>{
-const last=a.bids[a.bids.length-1];
-home.innerHTML+=`
-<div class="card">
-<div class="image-box">
-<span class="owner-badge" onclick="showProfile('${a.owner}')">@${a.owner}</span>
-<img src="${a.photo}">
-</div>
-<b>${a.name}</b>
-<p>💰 ${a.price} ₺</p>
-<p class="small">👤 Son teklif: ${last?last.user:"Yok"}</p>
-${Date.now()<a.start+86400000
-? `<button onclick="bid(${a.id})">Teklif Ver</button>`
-: "⛔ İhale bitti"}
-${user===a.owner
-? `<button class="danger" onclick="deleteAuction(${a.id})">İlanı Sil</button>`
-: ""}
-</div>`;
-});
-}
-renderHome();
-</script>
-
-</body>
-</html>
+  if(!confirm("İlan silinsin mi?")) return;
+  auctions = auctions.filter(a=>a.id!==id);
+  localStorage.setItem("auctions",JSON.
