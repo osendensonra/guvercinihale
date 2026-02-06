@@ -3,65 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İhale Sistemi</title>
+    <title>GuvercinIhale | Canlı Mezat</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-200 p-5">
+<body class="bg-gray-100 font-sans">
 
-    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-6 border-t-8 border-blue-900">
-        <h1 class="text-2xl font-black text-center mb-6">GÜVERCİN İHALE</h1>
-        
-        <div class="bg-blue-50 p-4 rounded-xl mb-6 text-center">
-            <p class="text-sm text-gray-500 font-bold uppercase">Mevcut Fiyat</p>
-            <p id="fiyatGosterge" class="text-4xl font-black text-blue-900">1.500 TL</p>
-        </div>
+    <nav class="bg-blue-900 p-4 text-white flex justify-between shadow-xl">
+        <h1 class="font-black tracking-tighter">GUVERCİNİHALE</h1>
+        <button onclick="adminKontrol()" class="text-[10px] opacity-50 uppercase font-bold">Yönetim</button>
+    </nav>
 
-        <button onclick="teklifAl()" class="w-full bg-blue-800 text-white py-5 rounded-2xl font-black text-xl shadow-lg active:bg-blue-700 mb-4">
-            TEKLİF VER
-        </button>
-
-        <button onclick="adminPaneliniAc()" class="w-full bg-gray-100 text-gray-400 py-2 rounded-xl text-xs font-bold uppercase">
-            Yönetim Paneli
-        </div>
-
-        <div id="mesajKutusu" class="mt-6 space-y-2 max-h-40 overflow-auto">
+    <div class="max-w-md mx-auto p-4">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+            <div class="relative">
+                <img src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=400" class="w-full h-56 object-cover">
+                <div class="absolute top-4 right-4 bg-red-600 text-white text-[10px] px-3 py-1 rounded-full animate-pulse font-bold">CANLI MEZAT</div>
             </div>
+            
+            <div class="p-6">
+                <h2 class="text-2xl font-black text-gray-800 uppercase">Mavi Şebap (Kupalı)</h2>
+                <p class="text-gray-500 text-sm mb-4">📍 Şanlıurfa / osendensonra</p>
+
+                <div class="bg-blue-50 p-4 rounded-2xl mb-6 flex justify-between items-center border border-blue-100">
+                    <div>
+                        <p class="text-gray-400 text-[10px] font-bold uppercase">En Yüksek Teklif</p>
+                        <p id="fiyatEkran" class="text-3xl font-black text-blue-900">1.500 TL</p>
+                    </div>
+                    <button onclick="teklifYap()" class="bg-blue-800 text-white px-6 py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-all">TEKLİF VER</button>
+                </div>
+
+                <div id="teklifListesi" class="space-y-2 max-h-48 overflow-y-auto">
+                    </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Hata olup olmadığını anlamak için ilk çalıştırmada mesaj verelim
-        console.log("Sistem yüklendi");
-
-        function teklifAl() {
-            try {
-                let isim = prompt("Adınız nedir?");
-                if (isim == null || isim == "") return;
-
-                let teklif = prompt("Teklifiniz kaç TL?");
-                if (teklif == null || teklif == "") return;
-
-                // Fiyatı ekrana yazdır
-                document.getElementById('fiyatGosterge').innerText = teklif + " TL";
-
-                // Listeye ekle
-                let liste = document.getElementById('mesajKutusu');
-                liste.innerHTML = '<div class="p-2 bg-green-50 border-l-4 border-green-500 text-sm"><b>' + isim + ':</b> ' + teklif + ' TL teklif verdi!</div>' + liste.innerHTML;
-                
-                alert("Teklifiniz başarıyla eklendi!");
-            } catch (hata) {
-                alert("Bir hata oluştu: " + hata.message);
+        // Sayfa açıldığında hafızadaki son teklifi yükle
+        window.onload = function() {
+            const sonTeklif = localStorage.getItem('sonFiyat');
+            const sonKisi = localStorage.getItem('sonKisi');
+            if (sonTeklif) {
+                document.getElementById('fiyatEkran').innerText = sonTeklif + " TL";
+                ekranaEkle(sonKisi, sonTeklif);
             }
+        };
+
+        function teklifYap() {
+            let ad = prompt("Adınız nedir?");
+            if (!ad) return;
+            let miktar = prompt("Teklifiniz kaç TL?");
+            if (!miktar || isNaN(miktar)) {
+                alert("Lütfen geçerli bir sayı girin!");
+                return;
+            }
+
+            // Hafızaya Kaydet
+            localStorage.setItem('sonFiyat', miktar);
+            localStorage.setItem('sonKisi', ad);
+
+            // Ekranda Güncelle
+            document.getElementById('fiyatEkran').innerText = miktar + " TL";
+            ekranaEkle(ad, miktar);
         }
 
-        function adminPaneliniAc() {
-            let sifre = prompt("Admin Şifresi:");
-            if (sifre === "guvercin123") {
-                alert("Hoş geldiniz osendensonra! Sistem yönetim modunda.");
-            } else {
-                alert("Şifre yanlış!");
+        function ekranaEkle(isim, fiyat) {
+            const liste = document.getElementById('teklifListesi');
+            const yeniTeklif = `
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border-l-4 border-blue-800 animate-fade-in">
+                    <span class="font-bold text-sm text-gray-700">${isim}</span>
+                    <span class="font-black text-blue-900">${fiyat} TL</span>
+                </div>
+            `;
+            liste.innerHTML = yeniTeklif + liste.innerHTML;
+        }
+
+        function adminKontrol() {
+            if (prompt("Şifre?") === "guvercin123") {
+                if (confirm("Tüm teklifleri sıfırlamak istiyor musunuz?")) {
+                    localStorage.clear();
+                    location.reload();
+                }
             }
         }
     </script>
 
+    <style>
+        @keyframes fade-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fade-in 0.3s ease-out; }
+    </style>
 </body>
 </html>
