@@ -1,8 +1,33 @@
 <!DOCTYPE html>
-<html>
-<body>
-    <button onclick="alert('ÇALIŞIYOR!')" style="padding:50px; background:green; color:white; font-size:30px;">
-        BURAYA TIKLA
-    </button>
-</body>
-</html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuvercinIhale | Canlı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-blue-900 p-4 text-white flex justify-between items-center shadow-lg">
+        <h1 onclick="location.reload()" class="font-bold text-lg cursor-pointer">GUVERCİNİHALE</h1>
+        <div class="flex space-x-2">
+            <button onclick="sayfaAc('home')" class="text-xs border border-white/30 px-3 py-1 rounded-lg">İhaleler</button>
+            <button onclick="adminKontrol()" class="text-xs bg-red-600 px-3 py-1 rounded-lg">Yönetim</button>
+        </div>
+    </nav>
+
+    <div id="home" class="p-4 container mx-auto max-w-md">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border">
+            <img src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=400" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <h3 class="font-black text-xl uppercase tracking-tighter">Mavi Şebap (Erkek)</h3>
+                <div class="flex justify-between items-center mt-4">
+                    <div>
+                        <p class="text-gray-400 text-[10px] font-bold uppercase">GÜNCEL FİYAT</p>
+                        <p id="fiyat" class="text-3xl font-black text-blue-800">1.500 TL</p>
+                    </div>
+                    <button onclick="teklifVer()" class="bg-blue-800 text-white px-6 py-3 rounded-xl font-bold shadow-lg active:scale-95">TEKLİF VER</button>
+                </div>
+
+                <div id="mesajlar" class="mt-6 bg-gray-50 rounded-xl p-3 h-40 overflow-y-auto text-sm space-y-2 border">
+                    <div class="text-gray-400 italic text-center text-xs">Henüz mesaj yok. İlk teklifi siz
