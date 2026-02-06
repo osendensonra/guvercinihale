@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GÜVERCİN PAZARI | Herkes İlan Verebilir</title>
+    <title>GÜVERCİN PAZARI | Görsel Yükleme</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -18,10 +18,10 @@
         <div class="max-w-5xl mx-auto px-4 h-16 flex justify-between items-center">
             <div class="flex items-center space-x-2 cursor-pointer" onclick="location.reload()">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">G</div>
-                <span class="font-black text-xl tracking-tighter uppercase">Güvercin<span class="text-blue-600">Pazarı</span></span>
+                <span class="font-black text-xl tracking-tighter uppercase italic">Güvercin<span class="text-blue-600">Pazarı</span></span>
             </div>
             <div id="nav-actions" class="flex items-center space-x-3">
-                <button onclick="sayfaAc('login')" class="text-xs font-bold bg-blue-600 text-white px-4 py-2 rounded-full shadow-md">GİRİŞ YAP</button>
+                <button onclick="sayfaAc('login')" class="text-xs font-bold bg-blue-600 text-white px-4 py-2 rounded-full">GİRİŞ YAP</button>
             </div>
         </div>
     </nav>
@@ -30,57 +30,66 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Canlı Mezat</h2>
             <div id="add-action" class="hidden">
-                <button onclick="sayfaAc('add-bid')" class="bg-emerald-600 text-white text-[10px] font-black px-4 py-2 rounded-full shadow-lg">+ İHALE BAŞLAT</button>
+                <button onclick="sayfaAc('add-bid')" class="bg-emerald-600 text-white text-[10px] font-black px-4 py-2 rounded-full shadow-lg border-2 border-white">+ İHALE BAŞLAT</button>
             </div>
         </div>
 
-        <div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden mb-10">
-            <img id="c-img" src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=600" class="w-full h-64 object-cover">
-            <div class="p-6">
-                <div class="flex justify-between items-start mb-2">
-                    <h3 id="c-title" class="text-2xl font-black uppercase text-slate-800 leading-tight">Mavi Şebap</h3>
-                    <span id="c-seller" class="text-[9px] bg-slate-100 text-slate-500 px-2 py-1 rounded-md font-bold uppercase">Satıcı: Sistem</span>
+        <div class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden mb-10">
+            <div class="relative">
+                <img id="c-img" src="https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=600" class="w-full h-80 object-cover bg-gray-200">
+                <div class="absolute top-4 left-4">
+                    <span id="c-seller" class="bg-black/50 text-white backdrop-blur-md text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">Satıcı: Sistem</span>
                 </div>
+            </div>
+            
+            <div class="p-8">
+                <h3 id="c-title" class="text-3xl font-black uppercase text-slate-800 leading-tight mb-6">Mavi Şebap</h3>
                 
-                <div class="bg-slate-50 p-5 rounded-2xl flex justify-between items-center border border-slate-100 mb-6">
+                <div class="bg-slate-50 p-6 rounded-3xl flex justify-between items-center border border-slate-100 shadow-inner">
                     <div>
-                        <span class="text-slate-400 text-[10px] font-bold uppercase block">En Yüksek Teklif</span>
+                        <span class="text-slate-400 text-[10px] font-bold uppercase block mb-1">En Yüksek Teklif</span>
                         <div id="c-price" class="text-3xl font-black text-blue-700 tracking-tighter">1.500 TL</div>
                     </div>
-                    <button onclick="makeBid()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 active:scale-95 transition-all">TEKLİF VER</button>
+                    <button onclick="makeBid()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:bg-blue-700 active:scale-95 transition-all uppercase tracking-tighter">Teklif Ver</button>
                 </div>
-
-                <div id="bid-history" class="space-y-2">
-                    </div>
             </div>
         </div>
     </main>
 
     <section id="login" class="hidden max-w-sm mx-auto p-6 mt-10">
-        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border border-slate-100">
-            <h2 class="text-2xl font-black text-center mb-6 uppercase tracking-tighter">Üye Girişi</h2>
-            <input type="text" id="u-name" placeholder="Kullanıcı Adı" class="w-full border p-4 rounded-2xl mb-3 outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border border-slate-100 text-center">
+            <h2 class="text-2xl font-black mb-6 uppercase tracking-tighter">Giriş Yap</h2>
+            <input type="text" id="u-name" placeholder="Kullanıcı Adı" class="w-full border p-4 rounded-2xl mb-3 outline-none">
             <input type="password" id="u-pass" placeholder="Şifre" class="w-full border p-4 rounded-2xl mb-4 outline-none">
-            <button onclick="handleLogin()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl">GİRİŞ YAP</button>
-            <p class="text-center text-[10px] text-slate-400 mt-4 italic">Not: Admin girişi için 'admin' / 'admin64' kullanın.</p>
+            <button onclick="handleLogin()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold">SİSTEME GİR</button>
+            <p class="text-[10px] text-slate-400 mt-4 italic text-center">Kullanıcı adı ve şifrenizi giriniz.</p>
         </div>
     </section>
 
     <section id="add-bid" class="hidden max-w-sm mx-auto p-6 mt-10">
-        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border-2 border-emerald-500">
-            <h2 class="text-2xl font-black text-emerald-600 mb-6 uppercase italic">Yeni İlan Ekle</h2>
+        <div class="bg-white p-8 rounded-[3rem] shadow-2xl border-4 border-emerald-500">
+            <h2 class="text-2xl font-black text-emerald-600 mb-6 uppercase italic tracking-tighter text-center">İhale Oluştur</h2>
             <div class="space-y-4">
-                <input type="text" id="new-t" placeholder="Güvercin Cinsi" class="w-full border p-4 rounded-2xl outline-none">
-                <input type="text" id="new-i" placeholder="Fotoğraf Linki (URL)" class="w-full border p-4 rounded-2xl outline-none">
-                <input type="number" id="new-p" placeholder="Başlangıç Fiyatı (TL)" class="w-full border p-4 rounded-2xl outline-none">
-                <button onclick="submitBid()" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-xl uppercase">İhaleyi Başlat</button>
-                <button onclick="sayfaAc('home')" class="w-full text-slate-400 text-xs font-bold">İptal Et</button>
+                <div class="relative w-full h-40 bg-slate-100 rounded-3xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+                    <input type="file" id="new-img-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage(this)">
+                    <div id="preview-placeholder" class="text-center">
+                        <span class="text-4xl">📸</span>
+                        <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Görsel Seç</p>
+                    </div>
+                    <img id="img-preview" class="hidden w-full h-full object-cover">
+                </div>
+                
+                <input type="text" id="new-t" placeholder="Güvercin Cinsi" class="w-full border p-4 rounded-2xl outline-none font-bold">
+                <input type="number" id="new-p" placeholder="Başlangıç Fiyatı (TL)" class="w-full border p-4 rounded-2xl outline-none font-bold">
+                <button onclick="submitBid()" class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black shadow-xl uppercase tracking-tighter">İhaleyi Başlat</button>
+                <button onclick="sayfaAc('home')" class="w-full text-slate-400 text-xs font-bold uppercase">Geri Dön</button>
             </div>
         </div>
     </section>
 
     <script>
         let user = localStorage.getItem('activeUser') || null;
+        let selectedImageData = "";
 
         function sayfaAc(id) {
             ['home', 'login', 'add-bid'].forEach(p => document.getElementById(p).classList.add('hidden'));
@@ -101,14 +110,15 @@
             }
 
             localStorage.setItem('activeUser', user);
-            alert('Hoş geldin ' + user);
             location.reload();
         }
 
         if (user) {
             document.getElementById('nav-actions').innerHTML = `
-                <span class="text-[10px] font-black bg-blue-100 text-blue-700 px-3 py-2 rounded-full uppercase">${user}</span>
-                <button onclick="logout()" class="text-red-500 font-bold text-[10px] ml-2 tracking-widest">ÇIKIŞ</button>
+                <div class="flex flex-col items-end">
+                    <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${user}</span>
+                    <button onclick="logout()" class="text-red-500 font-bold text-[9px] uppercase tracking-tighter">ÇIKIŞ YAP</button>
+                </div>
             `;
             document.getElementById('add-action').classList.remove('hidden');
         }
@@ -118,19 +128,32 @@
             location.reload();
         }
 
+        // Görsel Seçildiğinde Önizleme Yap
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImageData = e.target.result;
+                    document.getElementById('img-preview').src = selectedImageData;
+                    document.getElementById('img-preview').classList.remove('hidden');
+                    document.getElementById('preview-placeholder').classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         function submitBid() {
             const t = document.getElementById('new-t').value;
-            const i = document.getElementById('new-i').value || 'https://images.unsplash.com/photo-1509121504107-5999059f0f9c?w=600';
             const p = document.getElementById('new-p').value;
 
-            if(!t || !p) return alert('Başlık ve fiyat girin!');
+            if(!t || !p || !selectedImageData) return alert('Lütfen görsel seçin, başlık ve fiyat girin!');
 
             localStorage.setItem('c_title', t);
-            localStorage.setItem('c_img', i);
+            localStorage.setItem('c_img', selectedImageData);
             localStorage.setItem('c_price', p);
             localStorage.setItem('c_seller', user);
             
-            alert('İhale yayına alındı!');
+            alert('İhale Başarıyla Başlatıldı!');
             location.reload();
         }
 
